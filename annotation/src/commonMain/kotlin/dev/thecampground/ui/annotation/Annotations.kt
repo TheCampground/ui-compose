@@ -2,7 +2,7 @@ package dev.thecampground.ui.annotation
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
-annotation class CampgroundUIComponent(val name: String)
+annotation class CampgroundUIComponent()
 
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.SOURCE)

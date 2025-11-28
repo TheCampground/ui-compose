@@ -55,7 +55,7 @@ class AlertVariant(
 }
 
 @Composable
-@CampgroundUIComponent(name = "Test hello")
+@CampgroundUIComponent
 fun BaseAlert(
     @CampgroundUIComponentProp(description = "The variant of the alert")
     variant: AlertVariant,
@@ -84,7 +84,7 @@ fun BaseAlert(
 }
 
 @Composable
-@CampgroundUIComponent(name = "Test hello")
+@CampgroundUIComponent
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
     icon: @Composable (tint: Color, size: Dp) -> Unit,
@@ -106,7 +106,7 @@ fun Alert(
     }
 }
 
-@CampgroundUIComponent(name = "Test hello")
+@CampgroundUIComponent
 @Composable
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,

@@ -105,7 +105,7 @@ class FunctionProcessor(
         }
 
         return CodeBlock.builder()
-            .add("CampgroundDocComponent(\n")
+            .add("\nCampgroundDocComponent(\n")
             .indent()
             .add("name = %S,\n", comp.name)
             .add("description = %S,\n", comp.description)
