@@ -55,7 +55,7 @@ class AlertVariant(
 }
 
 @Composable
-@CampgroundUIComponent
+@CampgroundUIComponent(description = "Displays a callout for user attention.")
 fun BaseAlert(
     @CampgroundUIComponentProp(description = "The variant of the alert")
     variant: AlertVariant,
@@ -84,7 +84,7 @@ fun BaseAlert(
 }
 
 @Composable
-@CampgroundUIComponent
+@CampgroundUIComponent(description = "Displays a callout for user attention.")
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
     icon: @Composable (tint: Color, size: Dp) -> Unit,
@@ -106,7 +106,7 @@ fun Alert(
     }
 }
 
-@CampgroundUIComponent
+@CampgroundUIComponent(description = "Displays a callout for user attention.")
 @Composable
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,

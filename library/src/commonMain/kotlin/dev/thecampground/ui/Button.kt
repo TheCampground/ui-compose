@@ -86,7 +86,7 @@ internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
 }
 
 @Composable
-@CampgroundUIComponent
+@CampgroundUIComponent(description = "A custom button components with multiple variations and sizes")
 fun BaseButton(
     @CampgroundUIComponentProp(description = "Fires an event when the button is clicked.")
     onClick: () -> Unit,
@@ -168,7 +168,7 @@ fun BaseButton(
 }
 
 @Composable
-@CampgroundUIComponent
+@CampgroundUIComponent(description = "A custom button components with multiple variations and sizes")
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
@@ -198,7 +198,7 @@ fun Button(
 }
 
 @Composable
-@CampgroundUIComponent
+@CampgroundUIComponent(description = "A custom button components with multiple variations and sizes")
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
