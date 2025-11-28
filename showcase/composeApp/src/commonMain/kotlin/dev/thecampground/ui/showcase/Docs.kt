@@ -48,6 +48,7 @@ import camgroundui.showcase.composeapp.generated.resources.paintroller
 import camgroundui.showcase.composeapp.generated.resources.sticky_note
 import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
+import dev.thecampground.ui.CampgroundUIDocDefinitions
 import dev.thecampground.ui.Colors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -108,6 +109,12 @@ fun Docs() {
                         letterSpacing = (-0.4).sp,
                         color = Colors.BG_DARK
                     )
+                }
+
+                val compDef = CampgroundUIDocDefinitions.componentDefinitions
+
+                for (comp in compDef) {
+                    Text("$comp")
                 }
             }
 

@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.thecampground.ui.annotation.CampgroundUIComponent
 import dev.thecampground.ui.annotation.CampgroundUIComponentProp
+import dev.thecampground.ui.annotation.CampgroundUIType
 
 
 val DefaultButtonColors = ButtonColors(
@@ -75,6 +76,8 @@ val GhostButtonColors = ButtonColors(
 @Composable
 internal expect fun ButtonFeedbackTest(feedback: InputTouchFeedback?): Unit
 
+
+@CampgroundUIType
 internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
 
     companion object {
@@ -94,7 +97,7 @@ fun BaseButton(
     size: InputSizes = InputSizes.DEFAULT,
     @CampgroundUIComponentProp(description = "Set the button colours.")
     colors: ButtonColors = DefaultButtonColors,
-    @CampgroundUIComponentProp(description = "Set the hover color for the button.")
+    @CampgroundUIComponentProp(description = "Set the hover colour for the button.")
     hoverColor: Color = Colors.DEFAULT_BUTTON_HOVERED,
     @CampgroundUIComponentProp()
     modifier: Modifier = Modifier,

@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(project(":library"))
+            implementation(project(":annotation"))
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
