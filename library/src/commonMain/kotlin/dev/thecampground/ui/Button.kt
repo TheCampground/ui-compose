@@ -1,7 +1,11 @@
 package dev.thecampground.ui
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
@@ -23,6 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,13 +43,16 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.thecampground.ui.annotation.CampgroundUIComponent
 import dev.thecampground.ui.annotation.CampgroundUIComponentProp
 import dev.thecampground.ui.annotation.CampgroundUIType
+import kotlinx.coroutines.delay
 
 
+private const val BUTTON_ICON_SIZE = 18
 val DefaultButtonColors = ButtonColors(
     containerColor = Colors.BG_DARK,
     contentColor = Colors.BG,
@@ -89,7 +97,7 @@ internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
 }
 
 @Composable
-@CampgroundUIComponent(description = "A custom button components with multiple variations and sizes")
+@CampgroundUIComponent(uniqueName = "BaseButton", description = "A custom button components with multiple variations and sizes")
 fun BaseButton(
     @CampgroundUIComponentProp(description = "Fires an event when the button is clicked.")
     onClick: () -> Unit,
@@ -102,9 +110,10 @@ fun BaseButton(
     @CampgroundUIComponentProp()
     modifier: Modifier = Modifier,
     @CampgroundUIComponentProp(description = "Have custom input feedback.")
-    feedback: InputTouchFeedback? = null,
+    feedback: HapticFeedbackType? = HapticFeedbackType.Confirm,
+    icon: IconComposable,
     @CampgroundUIComponentProp(description = "Add any content slot.")
-    content: @Composable () -> Unit
+    content: (@Composable () -> Unit)?
 ) {
 
 
@@ -118,11 +127,12 @@ fun BaseButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
     val isPressed by interactionSource.collectIsPressedAsState()
+
     val targetContainerColor by remember {
         derivedStateOf {
             when {
-                isPressed -> colors.containerColor // Use base color when pressed
-                isHovered -> hoverColor
+                isPressed -> hoverColor // Use base color when pressed
+                isHovered || isPressed -> hoverColor
                 else -> colors.containerColor
             }
         }
@@ -130,15 +140,23 @@ fun BaseButton(
 
     val buttonScale by remember {
         derivedStateOf {
-            return@derivedStateOf when (isPressed) {
-                true -> 0.95f
-                false -> 1f
+            return@derivedStateOf when {
+                isHovered && !isPressed -> 0.98f
+                isPressed -> 0.95f
+                else -> 1f
             }
         }
     }
     val containerColorAnimated by animateColorAsState(targetContainerColor)
     val buttonScaleAnimated by animateFloatAsState(buttonScale)
 
+
+//    LaunchedEffect(Unit) {
+//        while (true) {
+//            delay(1000)
+//            if (feedback != null) haptic.performHapticFeedback(feedback)
+//        }
+//    }
     val containerColor by remember {
         derivedStateOf {
             return@derivedStateOf when (colors.containerColor == Color.Transparent) {
@@ -157,27 +175,30 @@ fun BaseButton(
                     indication = null,
                     role = Role.Button
                 ) {
-                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                    if (feedback != null) haptic.performHapticFeedback(feedback)
                     onClick()
                 },
             contentAlignment = Alignment.Center,
             propagateMinConstraints = true,
         ) {
-            Row(Modifier.padding(paddingValue)) {
-                content()
+            Row(Modifier.padding(paddingValue), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                icon(colors.contentColor, BUTTON_ICON_SIZE.dp)
+
+                if (content != null) content()
             }
         }
     }
 }
 
 @Composable
-@CampgroundUIComponent(description = "A custom button components with multiple variations and sizes")
+@CampgroundUIComponent(uniqueName="ButtonContentSlot", description = "A custom button components with multiple variations and sizes")
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
     size: InputSizes = InputSizes.DEFAULT,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    icon: IconComposable = {tint, size -> },
+    content: (@Composable () -> Unit)?,
 ) {
     val colors = when(variant) {
         ButtonVariants.DEFAULT -> ButtonVariant.DEFAULT
@@ -192,26 +213,23 @@ fun Button(
         colors = colors.color,
         hoverColor = colors.hoverColor,
         size = size,
-        modifier = modifier
-    ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            content()
-        }
-    }
+        modifier = modifier,
+        icon = icon,
+        content = content,
+    )
 }
 
 @Composable
-@CampgroundUIComponent(description = "A custom button components with multiple variations and sizes")
+@CampgroundUIComponent(uniqueName = "Button", description = "A custom button components with multiple variations and sizes")
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
     size: InputSizes = InputSizes.DEFAULT,
     modifier: Modifier = Modifier,
     text: String = "Campground",
-    icon: @Composable () -> Unit = {}
+    icon: IconComposable = { tint, size -> }
 ) {
-    Button(onClick, variant, size, modifier) {
-        icon()
+    Button(onClick, variant, size, modifier, icon = icon) {
         Text(text, fontWeight = FontWeight.SemiBold, letterSpacing = (-0.4).sp)
     }
 }
