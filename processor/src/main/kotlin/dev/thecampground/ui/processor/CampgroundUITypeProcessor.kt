@@ -19,7 +19,9 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
+import dev.thecampground.ui.annotation.CampgroundDocComponent
 import dev.thecampground.ui.annotation.CampgroundDocType
+import dev.thecampground.ui.annotation.CampgroundUIComponent
 import dev.thecampground.ui.annotation.CampgroundUIType
 
 class CampgroundUITypeProcessor(
@@ -49,8 +51,7 @@ class CampgroundUITypeProcessor(
     private fun generateCombinedFile() {
         if (collectedClasses.isEmpty()) return
 
-        val pkg = "dev.thecampground.ui"
-
+        val pkg = "dev.thecampground.ui.internal"
 
         val file = codeGenerator.createNewFile(
             Dependencies(false, *collectedClasses.map { it.first.containingFile!! }.toTypedArray()),
@@ -63,7 +64,6 @@ class CampgroundUITypeProcessor(
             val key = clazz.simpleName.asString()
             CodeBlock.of("%S to %L", key, buildTypeExpr(type))
         }
-
 
         val typeDefinitions = PropertySpec.builder(
             "typeDefinitions",
