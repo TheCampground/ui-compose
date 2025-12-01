@@ -10,7 +10,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,20 +34,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import camgroundui.showcase.composeapp.generated.resources.Res
 import camgroundui.showcase.composeapp.generated.resources.compass
-import camgroundui.showcase.composeapp.generated.resources.hamburger
 import camgroundui.showcase.composeapp.generated.resources.paintroller
 import camgroundui.showcase.composeapp.generated.resources.sticky_note
 import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
 import dev.thecampground.ui.CampgroundUIDocDefinitions
 import dev.thecampground.ui.Colors
+import dev.thecampground.ui.showcase.presentation.documentation.components.ComponentDetailsScreen
+import dev.thecampground.ui.showcase.presentation.defaultLink
+import dev.thecampground.ui.showcase.presentation.root.Header
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -169,6 +170,7 @@ fun Docs() {
 
 @Composable
 fun NavigationMenu(modifier: Modifier = Modifier) {
+    val componentDefinitions = CampgroundUIDocDefinitions.componentDefinitions
     Column(
         modifier = Modifier.background(Colors.BG).fillMaxHeight().width(300.dp)
             .padding(18.dp)
@@ -182,12 +184,12 @@ fun NavigationMenu(modifier: Modifier = Modifier) {
                         variant = ButtonVariants.SECONDARY,
                         text = "Introduction",
                         modifier = Modifier.fillMaxWidth()
-                    ) {
+                    ) { tint, size ->
                         Icon(
                             painterResource(Res.drawable.sticky_note),
                             contentDescription = "Sticky Note",
-                            modifier = Modifier.size(18.dp),
-                            tint = Colors.BG_DARK
+                            modifier = Modifier.size(size),
+                            tint = tint,
                         )
                     }
                     Button(
@@ -195,12 +197,12 @@ fun NavigationMenu(modifier: Modifier = Modifier) {
                         variant = ButtonVariants.GHOST,
                         text = "Getting Started",
                         modifier = Modifier.fillMaxWidth()
-                    ) {
+                    ) { tint, size ->
                         Icon(
                             painterResource(Res.drawable.compass),
                             contentDescription = "Compass",
-                            modifier = Modifier.size(18.dp),
-                            tint = Colors.BG_DARK
+                            modifier = Modifier.size(size),
+                            tint = tint
                         )
                     }
                     Button(
@@ -208,12 +210,12 @@ fun NavigationMenu(modifier: Modifier = Modifier) {
                         variant = ButtonVariants.GHOST,
                         text = "Styling",
                         modifier = Modifier.fillMaxWidth()
-                    ) {
+                    ) {  tint, size ->
                         Icon(
                             painterResource(Res.drawable.paintroller),
                             contentDescription = "Paint Roller",
-                            modifier = Modifier.size(18.dp),
-                            tint = Colors.BG_DARK
+                            modifier = Modifier.size(size),
+                            tint = tint
                         )
                     }
                 }
@@ -225,28 +227,9 @@ fun NavigationMenu(modifier: Modifier = Modifier) {
                 NavigationMenuSubTitle("COMPONENTS")
 
                 Column(modifier = Modifier.verticalScroll(verticalScrollComponents)) {
-                    NavigationComponentItem("Accordion")
-                    NavigationComponentItem("Alert")
-                    NavigationComponentItem("Alert Dialog")
-                    NavigationComponentItem("Button")
-                    NavigationComponentItem("Card")
-                    NavigationComponentItem("Checkbox")
-                    NavigationComponentItem("Dialog")
-                    NavigationComponentItem("Drawer")
-                    NavigationComponentItem("Dropdown Menu")
-                    NavigationComponentItem("Empty")
-                    NavigationComponentItem("Input")
-                    NavigationComponentItem("Kbd")
-                    NavigationComponentItem("Label")
-                    NavigationComponentItem("Noise")
-                    NavigationComponentItem("Popover")
-                    NavigationComponentItem("Progress")
-                    NavigationComponentItem("Radio Group")
-                    NavigationComponentItem("Separator")
-                    NavigationComponentItem("Slider")
-                    NavigationComponentItem("Sonner")
-                    NavigationComponentItem("Switch")
-                    NavigationComponentItem("Tabs")
+                    for (compName in componentDefinitions) {
+                        NavigationComponentItem(compName.key)
+                    }
                 }
             }
         }
@@ -255,7 +238,12 @@ fun NavigationMenu(modifier: Modifier = Modifier) {
 
 @Composable
 fun NavigationComponentItem(text: String) {
-    Button(variant = ButtonVariants.GHOST, modifier = Modifier.fillMaxWidth(), onClick = {}) {
+    val navigator = LocalNavigator.currentOrThrow
+
+    Button(variant = ButtonVariants.GHOST, modifier = Modifier.fillMaxWidth(), onClick = {
+        navigator.push(
+        ComponentDetailsScreen(text))}
+    ) {
         Text(text, fontSize = 14.sp)
     }
 }
