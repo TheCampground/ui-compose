@@ -1,30 +1,16 @@
 package dev.thecampground.ui.showcase.presentation.documentation
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.TransitionState
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.rememberTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -43,40 +29,26 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.core.stack.StackEvent
-import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import cafe.adriel.voyager.transitions.CrossfadeTransition
 import cafe.adriel.voyager.transitions.FadeTransition
-import cafe.adriel.voyager.transitions.ScaleTransition
-import cafe.adriel.voyager.transitions.ScreenTransition
-import cafe.adriel.voyager.transitions.ScreenTransitionContent
-import cafe.adriel.voyager.transitions.SlideTransition
 import camgroundui.showcase.composeapp.generated.resources.Res
 import camgroundui.showcase.composeapp.generated.resources.compass
 import camgroundui.showcase.composeapp.generated.resources.paintroller
 import camgroundui.showcase.composeapp.generated.resources.sticky_note
+import dev.thecampground.showcase.generated.CampgroundComponents
 import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
-import dev.thecampground.ui.CampgroundUIDocDefinitions
 import dev.thecampground.ui.Colors
-import dev.thecampground.ui.showcase.presentation.defaultLink
 import dev.thecampground.ui.showcase.presentation.documentation.components.ComponentDetailsScreen
 import dev.thecampground.ui.showcase.presentation.root.Header
 import org.jetbrains.compose.resources.painterResource
@@ -186,7 +158,7 @@ class DocumentationScreen : Screen {
 
     @Composable
     private fun NavigationMenu(navigator: Navigator, onClick: () -> Unit, modifier: Modifier = Modifier) {
-        val componentDefinitions = CampgroundUIDocDefinitions.componentDefinitions
+        val componentDefinitions = CampgroundComponents.components
         val currentScreen = navigator.lastItem
 
         Column(

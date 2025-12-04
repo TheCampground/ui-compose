@@ -44,9 +44,9 @@ import camgroundui.showcase.composeapp.generated.resources.Res
 import camgroundui.showcase.composeapp.generated.resources.compass
 import camgroundui.showcase.composeapp.generated.resources.paintroller
 import camgroundui.showcase.composeapp.generated.resources.sticky_note
+import dev.thecampground.showcase.generated.CampgroundComponents
 import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
-import dev.thecampground.ui.CampgroundUIDocDefinitions
 import dev.thecampground.ui.Colors
 import dev.thecampground.ui.showcase.presentation.documentation.components.ComponentDetailsScreen
 import dev.thecampground.ui.showcase.presentation.defaultLink
@@ -112,7 +112,7 @@ fun Docs() {
                     )
                 }
 
-                val compDef = CampgroundUIDocDefinitions.componentDefinitions
+                val compDef = CampgroundComponents.components
 
                 for (comp in compDef) {
                     Text("$comp")
@@ -170,7 +170,7 @@ fun Docs() {
 
 @Composable
 fun NavigationMenu(modifier: Modifier = Modifier) {
-    val componentDefinitions = CampgroundUIDocDefinitions.componentDefinitions
+    val componentDefinitions = CampgroundComponents.components
     Column(
         modifier = Modifier.background(Colors.BG).fillMaxHeight().width(300.dp)
             .padding(18.dp)

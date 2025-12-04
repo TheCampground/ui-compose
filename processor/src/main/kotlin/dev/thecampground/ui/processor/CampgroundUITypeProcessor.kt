@@ -10,8 +10,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeAlias
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.validate
@@ -24,8 +22,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import dev.thecampground.ui.annotation.CampgroundDocType
-import dev.thecampground.ui.annotation.CampgroundDocTypeType
+import dev.thecampground.ui.annotation.model.CampgroundType
+import dev.thecampground.ui.annotation.model.CampgroundTypeType
 import kotlin.system.exitProcess
 
 class CampgroundUITypeProcessor(
@@ -33,7 +31,7 @@ class CampgroundUITypeProcessor(
     val logger: KSPLogger
 ) : SymbolProcessor {
     private var fileAlreadyGenerated = false
-    private var collectedItems = mutableListOf<Pair<KSDeclaration, CampgroundDocType>>()
+    private var collectedItems = mutableListOf<Pair<KSDeclaration, CampgroundType>>()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("dev.thecampground.ui.annotation.CampgroundType", inDepth = true)
@@ -55,12 +53,11 @@ class CampgroundUITypeProcessor(
     private fun generateCombinedFile() {
         if (collectedItems.isEmpty()) return
 
-        val pkg = "dev.thecampground.ui.internal"
 
         val file = codeGenerator.createNewFile(
             Dependencies(false, *collectedItems.map { it.first.containingFile!! }.toTypedArray()),
-            pkg,
-            "CampgroundUIDocTypeDefinitions",
+            PKG,
+            "CampgroundTypes",
             "kt"
         )
 
@@ -70,25 +67,24 @@ class CampgroundUITypeProcessor(
         }
 
         val typeDefinitions = PropertySpec.builder(
-            "typeDefinitions",
+            "types",
             Map::class.asClassName().parameterizedBy(
                 STRING,
-                ClassName("dev.thecampground.ui.annotation", "CampgroundDocType")
+                ClassName("dev.thecampground.ui.annotation.model", "CampgroundType")
             )
         ).initializer(
             typeExpressions.joinToString(prefix = "mapOf(\n", postfix = "\n)") { "%L" },
             *typeExpressions.toTypedArray()
         ).build()
 
-        val objType = TypeSpec.objectBuilder("CampgroundUIDocTypeDefinitions")
+        val objType = TypeSpec.objectBuilder("CampgroundTypes")
             .addProperty(typeDefinitions)
-            .addModifiers(KModifier.INTERNAL)
             .build()
 
-        val fileSpec = FileSpec.builder(pkg, "CampgroundUIDocTypeDefinitions")
+        val fileSpec = FileSpec.builder(PKG, "CampgroundTypes")
             .addType(objType)
-            .addImport("dev.thecampground.ui.annotation", "CampgroundDocType")
-            .addImport("dev.thecampground.ui.annotation", "CampgroundDocTypeType")
+            .addImport("dev.thecampground.ui.annotation.model", "CampgroundType")
+            .addImport("dev.thecampground.ui.annotation.model", "CampgroundTypeType")
             .build()
 
         file.writer().use { writer ->
@@ -96,9 +92,9 @@ class CampgroundUITypeProcessor(
         }
     }
 
-    private fun buildTypeExpr(comp: CampgroundDocType): CodeBlock {
+    private fun buildTypeExpr(comp: CampgroundType): CodeBlock {
         return CodeBlock.builder()
-            .add("\nCampgroundDocType(\n")
+            .add("\nCampgroundType(\n")
             .indent()
             .add("name = %S,\n", comp.name)
             .add("description = %S,\n", comp.description)
@@ -113,11 +109,11 @@ class CampgroundUITypeProcessor(
             .unindent()
             .add("),\n")
             .unindent()
-            .add("type = CampgroundDocTypeType.${comp.type.name},\n")
+            .add("type = CampgroundTypeType.${comp.type.name},\n")
             .add(")")
             .build()
     }
-    private fun generateTypeForClass(clazz: KSClassDeclaration): CampgroundDocType {
+    private fun generateTypeForClass(clazz: KSClassDeclaration): CampgroundType {
         val className = clazz.simpleName.asString()
         val companionObj = clazz.declarations
             .filterIsInstance<KSClassDeclaration>()
@@ -131,15 +127,15 @@ class CampgroundUITypeProcessor(
             else -> companionObj.getAllProperties().map { it.simpleName.asString() }.toList()
         }
 
-        return CampgroundDocType(
+        return CampgroundType(
             name = className,
             description = "Not provided",
             properties = properties,
-            type = CampgroundDocTypeType.CLASS
+            type = CampgroundTypeType.CLASS
         )
     }
     
-    private fun generateTypeForAlias(alias: KSTypeAlias): CampgroundDocType {
+    private fun generateTypeForAlias(alias: KSTypeAlias): CampgroundType {
         val aliasName = alias.simpleName.asString()
         val resolvedType = alias.type.resolve()
         val aliasIsFunc = resolvedType.isFunctionType
@@ -155,11 +151,11 @@ class CampgroundUITypeProcessor(
         // TODO: Null check
         val functionParameters = resolvedType.arguments.dropLast(1).map { it.type!!.resolve().declaration.simpleName.asString() }
 
-        return CampgroundDocType(
+        return CampgroundType(
             name = aliasName,
             description = description,
             properties = functionParameters,
-            type = CampgroundDocTypeType.FUNCTION,
+            type = CampgroundTypeType.FUNCTION,
         )
     }
     inner class CampgroundUITypeVisitor() : KSVisitorVoid() {
