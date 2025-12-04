@@ -26,12 +26,11 @@ import dev.thecampground.ui.annotation.CampgroundDocComponent
 import dev.thecampground.ui.annotation.CampgroundDocComponentProp
 import kotlin.system.exitProcess
 
-data class CampgroundDocComponentExampleWrapper(val component: CampgroundDocComponent, val example: String? = null)
 class FunctionProcessor(
     val codeGenerator: CodeGenerator,
     val logger: KSPLogger
 ) : SymbolProcessor {
-    private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, CampgroundDocComponentExampleWrapper>>()
+    private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, CampgroundDocComponent>>()
     private var fileAlreadyGenerated = false
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -118,8 +117,7 @@ class FunctionProcessor(
         }
     }
 
-    private fun buildComponentExpr(wrapper: CampgroundDocComponentExampleWrapper): CodeBlock {
-        val comp = wrapper.component
+    private fun buildComponentExpr(comp: CampgroundDocComponent): CodeBlock {
 
         val propsList = comp.props.map { prop ->
             CodeBlock.of(
@@ -161,7 +159,7 @@ class FunctionProcessor(
         }
     }
 
-    private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundDocComponentExampleWrapper {
+    private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundDocComponent {
         val funcName = func.simpleName.asString()
         val paramList = mutableListOf<CampgroundDocComponentProp>()
         val annotation = func.annotations.firstOrNull { ann ->
