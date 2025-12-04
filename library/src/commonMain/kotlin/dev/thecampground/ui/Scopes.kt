@@ -6,7 +6,9 @@ import androidx.compose.ui.unit.Dp
 import dev.thecampground.ui.annotation.CampgroundType
 
 @CampgroundType
+@Suppress("unused")
 typealias IconComposable = @Composable (tint: Color, size: Dp) -> Unit
 
 @CampgroundType
+@Suppress("unused")
 typealias TextComposable = @Composable (tint: Color) -> Unit
