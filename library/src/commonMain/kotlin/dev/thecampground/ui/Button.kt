@@ -64,10 +64,6 @@ val GhostButtonColors = ButtonColors(
     disabledContentColor = Colors.BG_DARK.copy(alpha = 0.8f)
 )
 
-@Composable
-internal expect fun ButtonFeedbackTest(feedback: InputTouchFeedback?): Unit
-
-
 @CampgroundType
 internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
 
@@ -80,7 +76,7 @@ internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
 }
 
 @Composable
-@CampgroundComponent(uniqueName = "BaseButton", description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(description = "A custom button components with multiple variations and sizes")
 fun BaseButton(
     @CampgroundProp(description = "Fires an event when the button is clicked.")
     onClick: () -> Unit,
@@ -133,13 +129,6 @@ fun BaseButton(
     val containerColorAnimated by animateColorAsState(targetContainerColor)
     val buttonScaleAnimated by animateFloatAsState(buttonScale)
 
-
-//    LaunchedEffect(Unit) {
-//        while (true) {
-//            delay(1000)
-//            if (feedback != null) haptic.performHapticFeedback(feedback)
-//        }
-//    }
     val containerColor by remember {
         derivedStateOf {
             return@derivedStateOf when (colors.containerColor == Color.Transparent) {
@@ -174,13 +163,13 @@ fun BaseButton(
 }
 
 @Composable
-@CampgroundComponent(uniqueName="ButtonContentSlot", description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(description = "A custom button components with multiple variations and sizes")
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
     size: InputSizes = InputSizes.DEFAULT,
     modifier: Modifier = Modifier,
-    icon: IconComposable = {tint, size -> },
+    icon: IconComposable = { _, _ -> },
     content: (@Composable () -> Unit)?,
 ) {
     val colors = when(variant) {
@@ -203,14 +192,14 @@ fun Button(
 }
 
 @Composable
-@CampgroundComponent(uniqueName = "Button", description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(description = "A custom button components with multiple variations and sizes")
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
     size: InputSizes = InputSizes.DEFAULT,
     modifier: Modifier = Modifier,
     text: String = "Campground",
-    icon: IconComposable = { tint, size -> }
+    icon: IconComposable = { _, _ -> }
 ) {
     Button(onClick, variant, size, modifier, icon = icon) {
         Text(text, fontWeight = FontWeight.SemiBold, letterSpacing = (-0.4).sp)

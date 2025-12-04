@@ -2,6 +2,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import com.android.build.api.dsl.androidLibrary
 import com.google.devtools.ksp.gradle.KspExtension
+import org.gradle.api.problems.internal.GradleCoreProblemGroup.compilation
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -23,11 +24,12 @@ kotlin {
                 excludes += "/META-INF/{AL2.0,LGPL2.1}"
             }
         }
-        compilations.configureEach {
-            compilerOptions.configure {
-                jvmTarget.set(
-                    JvmTarget.JVM_11
-                )
+
+        compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_17)
+                }
             }
         }
     }
