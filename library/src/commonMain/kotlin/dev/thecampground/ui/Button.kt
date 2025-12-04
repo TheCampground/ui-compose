@@ -1,55 +1,38 @@
 package dev.thecampground.ui
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults.buttonElevation
-import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.thecampground.ui.annotation.CampgroundUIComponent
-import dev.thecampground.ui.annotation.CampgroundUIComponentProp
-import dev.thecampground.ui.annotation.CampgroundUIType
-import kotlinx.coroutines.delay
+import dev.thecampground.ui.annotation.CampgroundComponent
+import dev.thecampground.ui.annotation.CampgroundProp
+import dev.thecampground.ui.annotation.CampgroundType
 
 
 private const val BUTTON_ICON_SIZE = 18
@@ -85,7 +68,7 @@ val GhostButtonColors = ButtonColors(
 internal expect fun ButtonFeedbackTest(feedback: InputTouchFeedback?): Unit
 
 
-@CampgroundUIType
+@CampgroundType
 internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
 
     companion object {
@@ -97,22 +80,22 @@ internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
 }
 
 @Composable
-@CampgroundUIComponent(uniqueName = "BaseButton", description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(uniqueName = "BaseButton", description = "A custom button components with multiple variations and sizes")
 fun BaseButton(
-    @CampgroundUIComponentProp(description = "Fires an event when the button is clicked.")
+    @CampgroundProp(description = "Fires an event when the button is clicked.")
     onClick: () -> Unit,
-    @CampgroundUIComponentProp(description = "Control the button sizes.")
+    @CampgroundProp(description = "Control the button sizes.")
     size: InputSizes = InputSizes.DEFAULT,
-    @CampgroundUIComponentProp(description = "Set the button colours.")
+    @CampgroundProp(description = "Set the button colours.")
     colors: ButtonColors = DefaultButtonColors,
-    @CampgroundUIComponentProp(description = "Set the hover colour for the button.")
+    @CampgroundProp(description = "Set the hover colour for the button.")
     hoverColor: Color = Colors.DEFAULT_BUTTON_HOVERED,
-    @CampgroundUIComponentProp()
+    @CampgroundProp()
     modifier: Modifier = Modifier,
-    @CampgroundUIComponentProp(description = "Have custom input feedback.")
+    @CampgroundProp(description = "Have custom input feedback.")
     feedback: HapticFeedbackType? = HapticFeedbackType.Confirm,
     icon: IconComposable,
-    @CampgroundUIComponentProp(description = "Add any content slot.")
+    @CampgroundProp(description = "Add any content slot.")
     content: (@Composable () -> Unit)?
 ) {
 
@@ -191,7 +174,7 @@ fun BaseButton(
 }
 
 @Composable
-@CampgroundUIComponent(uniqueName="ButtonContentSlot", description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(uniqueName="ButtonContentSlot", description = "A custom button components with multiple variations and sizes")
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
@@ -220,7 +203,7 @@ fun Button(
 }
 
 @Composable
-@CampgroundUIComponent(uniqueName = "Button", description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(uniqueName = "Button", description = "A custom button components with multiple variations and sizes")
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,

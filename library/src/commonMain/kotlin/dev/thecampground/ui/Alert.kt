@@ -14,17 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.thecampground.ui.annotation.CampgroundDocComponent
-import dev.thecampground.ui.annotation.CampgroundUIComponent
-import dev.thecampground.ui.annotation.CampgroundUIComponentProp
-import dev.thecampground.ui.annotation.CampgroundUIType
+import dev.thecampground.ui.annotation.CampgroundComponent
+import dev.thecampground.ui.annotation.CampgroundProp
+import dev.thecampground.ui.annotation.CampgroundType
 
 private const val ALERT_ICON_SIZE = 20
 
-@CampgroundUIType
+@CampgroundType
 class AlertVariant(
     val background: Color,
     val foreground: Color,
@@ -60,9 +58,9 @@ class AlertVariant(
 }
 
 @Composable
-@CampgroundUIComponent(uniqueName = "BaseAlert", description = "Displays a callout for user attention.")
+@CampgroundComponent(uniqueName = "BaseAlert", description = "Displays a callout for user attention.")
 fun BaseAlert(
-    @CampgroundUIComponentProp(description = "The variant of the alert")
+    @CampgroundProp(description = "The variant of the alert")
     variant: AlertVariant,
     icon: IconComposable,
     content: @Composable (tint: Color) -> Unit
@@ -91,7 +89,7 @@ fun BaseAlert(
 }
 
 @Composable
-@CampgroundUIComponent(uniqueName = "AlertContentSlot", description = "Displays a callout for user attention.")
+@CampgroundComponent(uniqueName = "AlertContentSlot", description = "Displays a callout for user attention.")
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
     icon: IconComposable,
@@ -113,7 +111,7 @@ fun Alert(
     }
 }
 
-@CampgroundUIComponent(uniqueName = "Alert", description = "Displays a callout for user attention.")
+@CampgroundComponent(uniqueName = "Alert", description = "Displays a callout for user attention.")
 @Composable
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
