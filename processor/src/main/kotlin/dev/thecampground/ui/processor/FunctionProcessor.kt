@@ -24,7 +24,6 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.joinToCode
 import dev.thecampground.ui.annotation.CampgroundDocComponent
 import dev.thecampground.ui.annotation.CampgroundDocComponentProp
-import kotlin.system.exitProcess
 
 class FunctionProcessor(
     val codeGenerator: CodeGenerator,
@@ -162,28 +161,9 @@ class FunctionProcessor(
     private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundDocComponent {
         val funcName = func.simpleName.asString()
         val paramList = mutableListOf<CampgroundDocComponentProp>()
-        val annotation = func.annotations.firstOrNull { ann ->
-            ann.annotationType
-                .resolve()
-                .declaration
-                .qualifiedName
-                ?.asString() == "dev.thecampground.ui.annotation.CampgroundUIComponent"
-        }
-        val description = annotation
-            ?.arguments
-            ?.firstOrNull { it.name?.asString() == "description" }
-            ?.value as? String ?: ""
+        val annotation = func.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundUIComponent")
+        val description = annotation?.getArgumentValueAsString("description") ?: "No description provided."
 
-       val uniqueName = annotation
-           ?.arguments
-           ?.firstOrNull { it.name?.asString() == "uniqueName" }
-           ?.value as? String
-
-        // TODO: Probably a better way to see if a component has a unique name.
-        if (uniqueName == null || collectedComponents.find { comp -> comp.second.component.uniqueName == uniqueName } != null) {
-            println("CampgroundUIComponent \"${funcName}\" MUST have a unique name specified!")
-            exitProcess(1)
-        }
 
         func.parameters.forEach { param ->
             paramList.add(generateParamDef(param))
@@ -201,17 +181,8 @@ class FunctionProcessor(
         val name = param.name!!.asString()
         val default = param.hasDefault
         val typeName = param.type.resolve().declaration.simpleName.asString()
-        val annotation = param.annotations.firstOrNull { ann ->
-            ann.annotationType
-                .resolve()
-                .declaration
-                .qualifiedName
-                ?.asString() == "dev.thecampground.ui.annotation.CampgroundUIComponentProp"
-        }
-        val description = annotation
-            ?.arguments
-            ?.firstOrNull { it.name?.asString() == "description" }
-            ?.value as? String ?: ""
+        val annotation = param.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundUIComponentProp")
+        val description = annotation?.getArgumentValueAsString("description") ?: "Not provided."
 
         return CampgroundDocComponentProp(
             name,
