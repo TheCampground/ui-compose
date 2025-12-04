@@ -36,7 +36,7 @@ class CampgroundUITypeProcessor(
     private var collectedItems = mutableListOf<Pair<KSDeclaration, CampgroundDocType>>()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("dev.thecampground.ui.annotation.CampgroundUIType", inDepth = true)
+        val symbols = resolver.getSymbolsWithAnnotation("dev.thecampground.ui.annotation.CampgroundType", inDepth = true)
 
         val invalid = symbols.filter { !it.validate() }.toList()
 
@@ -123,7 +123,7 @@ class CampgroundUITypeProcessor(
             .filterIsInstance<KSClassDeclaration>()
             .firstOrNull() { it.isCompanionObject }
         val description =  clazz
-            .getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundUIType")
+            .getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundType")
             ?.getArgumentValueAsString("description") ?: "Not provided"
 
         val properties = when (companionObj) {
@@ -144,7 +144,7 @@ class CampgroundUITypeProcessor(
         val resolvedType = alias.type.resolve()
         val aliasIsFunc = resolvedType.isFunctionType
         val description = alias
-            .getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundUIType")
+            .getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundType")
             ?.getArgumentValueAsString("description") ?: "Not provided"
 
         if (!aliasIsFunc) {

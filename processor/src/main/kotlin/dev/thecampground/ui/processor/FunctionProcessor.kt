@@ -34,7 +34,7 @@ class FunctionProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation(
-            "dev.thecampground.ui.annotation.CampgroundUIComponent",
+            "dev.thecampground.ui.annotation.CampgroundComponent",
             inDepth = true
         )
 
@@ -161,7 +161,7 @@ class FunctionProcessor(
     private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundDocComponent {
         val funcName = func.simpleName.asString()
         val paramList = mutableListOf<CampgroundDocComponentProp>()
-        val annotation = func.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundUIComponent")
+        val annotation = func.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundComponent")
         val description = annotation?.getArgumentValueAsString("description") ?: "No description provided."
 
 
@@ -181,7 +181,7 @@ class FunctionProcessor(
         val name = param.name!!.asString()
         val default = param.hasDefault
         val typeName = param.type.resolve().declaration.simpleName.asString()
-        val annotation = param.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundUIComponentProp")
+        val annotation = param.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundProp")
         val description = annotation?.getArgumentValueAsString("description") ?: "Not provided."
 
         return CampgroundDocComponentProp(

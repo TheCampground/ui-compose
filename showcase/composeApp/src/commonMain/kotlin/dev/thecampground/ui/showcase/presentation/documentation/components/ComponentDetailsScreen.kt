@@ -52,7 +52,6 @@ import dev.thecampground.ui.InputSizes
 import dev.thecampground.ui.RoundedInputShape
 import dev.thecampground.ui.RoundedInputShapeFull
 import dev.thecampground.ui.RoundedPreviewShape
-import dev.thecampground.ui.internal.CampgroundUIExamples
 import dev.thecampground.ui.showcase.internal.generateAnnotatedString
 import dev.thecampground.ui.showcase.presentation.documentation.DocumentationRoot
 import dev.thecampground.ui.showcase.sourceCodeProFamily
@@ -76,7 +75,7 @@ data class ComponentDetailsScreen(val component: String) : Screen {
                     description = component.description
                 ) {
 
-                    val firstExample = CampgroundUIExamples.exampleDefinitions[component.name]
+                    val firstExample = null
                     if (firstExample != null) {
 
                         val highlights by remember {
