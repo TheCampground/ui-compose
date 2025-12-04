@@ -34,31 +34,36 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
         }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(project(":library"))
-            implementation(project(":annotation"))
+        commonMain {
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.androidx.lifecycle.runtimeCompose)
+                implementation(project(":library"))
+                implementation(project(":annotation"))
 
-            // Voyager Nav
+                // Voyager Nav
 
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.screenModel)
-            implementation(libs.voyager.transitions)
-            implementation("dev.snipme:highlights:1.1.0")
+                implementation(libs.voyager.navigator)
+                implementation(libs.voyager.screenModel)
+                implementation(libs.voyager.transitions)
+                implementation("dev.snipme:highlights:1.1.0")
+            }
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-        jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
+        jvmMain {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.coroutinesSwing)
+            }
         }
     }
 }
@@ -92,8 +97,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":library"))
-    implementation(project(":library"))
     debugImplementation(compose.uiTooling)
 }
 
@@ -108,3 +111,14 @@ compose.desktop {
         }
     }
 }
+
+//dependencies {
+//
+////    add("kspJvm", project(":processor"))
+//}
+
+//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+//    if (name != "kspCommonMainKotlinMetadata") {
+//        dependsOn("kspCommonMainKotlinMetadata")
+//    }
+//}
