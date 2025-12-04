@@ -8,7 +8,6 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSValueParameter
@@ -22,14 +21,14 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.joinToCode
-import dev.thecampground.ui.annotation.CampgroundDocComponent
-import dev.thecampground.ui.annotation.CampgroundDocComponentProp
+import dev.thecampground.ui.annotation.model.CampgroundComponent
+import dev.thecampground.ui.annotation.model.CampgroundProp
 
 class FunctionProcessor(
     val codeGenerator: CodeGenerator,
     val logger: KSPLogger
 ) : SymbolProcessor {
-    private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, CampgroundDocComponent>>()
+    private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, CampgroundComponent>>()
     private var fileAlreadyGenerated = false
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -55,7 +54,6 @@ class FunctionProcessor(
     private fun generateCombinedFile() {
         if (collectedComponents.isEmpty()) return
 
-        val pkg = collectedComponents.first().first.packageName.asString()
 
         val grouped = collectedComponents.groupBy { (fn, _) ->
             fn.simpleName.asString()
@@ -63,8 +61,8 @@ class FunctionProcessor(
 
         val file = codeGenerator.createNewFile(
             Dependencies(false, *collectedComponents.map { it.first.containingFile!! }.toTypedArray()),
-            pkg,
-            "CampgroundUIDocDefinitions",
+            PKG,
+            "CampgroundComponents",
             "kt"
         )
 
@@ -86,11 +84,11 @@ class FunctionProcessor(
 
 
         val definitionsProp = PropertySpec.builder(
-            "componentDefinitions",
+            "components",
             Map::class.asClassName().parameterizedBy(
                 String::class.asClassName(),
                 List::class.asClassName().parameterizedBy(
-                    ClassName("dev.thecampground.ui.annotation", "CampgroundDocComponent")
+                    ClassName("dev.thecampground.ui.annotation.model", "CampgroundComponent")
                 )
             )
         )
@@ -100,14 +98,14 @@ class FunctionProcessor(
             )
             .build()
 
-        val objType = TypeSpec.objectBuilder("CampgroundUIDocDefinitions")
+        val objType = TypeSpec.objectBuilder("CampgroundComponents")
             .addProperty(definitionsProp)
             .build()
 
-        val fileSpec = FileSpec.builder(pkg, "CampgroundUIDocDefinitions")
+        val fileSpec = FileSpec.builder(PKG, "CampgroundComponents")
             .addType(objType)
-            .addImport("dev.thecampground.ui.annotation", "CampgroundDocComponent")
-            .addImport("dev.thecampground.ui.annotation", "CampgroundDocComponentProp")
+            .addImport("dev.thecampground.ui.annotation.model", "CampgroundComponent")
+            .addImport("dev.thecampground.ui.annotation.model", "CampgroundProp")
 //            .addImport(packageName = "dev.thecampground.ui.examples", names = examples.toTypedArray())
             .build()
 
@@ -116,11 +114,11 @@ class FunctionProcessor(
         }
     }
 
-    private fun buildComponentExpr(comp: CampgroundDocComponent): CodeBlock {
+    private fun buildComponentExpr(comp: CampgroundComponent): CodeBlock {
 
         val propsList = comp.props.map { prop ->
             CodeBlock.of(
-                "CampgroundDocComponentProp(name = %S, type = %S, default = %L, description = %S)",
+                "CampgroundProp(name = %S, type = %S, default = %L, description = %S)",
                 prop.name,
                 prop.type,
                 prop.default,
@@ -129,7 +127,7 @@ class FunctionProcessor(
         }
 
         return CodeBlock.builder()
-            .add("CampgroundDocComponent(\n")
+            .add("CampgroundComponent(\n")
             .indent()
             .add("name = %S,\n", comp.name)
             .add("description = %S,\n", comp.description)
@@ -158,9 +156,9 @@ class FunctionProcessor(
         }
     }
 
-    private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundDocComponent {
+    private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundComponent {
         val funcName = func.simpleName.asString()
-        val paramList = mutableListOf<CampgroundDocComponentProp>()
+        val paramList = mutableListOf<CampgroundProp>()
         val annotation = func.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundComponent")
         val description = annotation?.getArgumentValueAsString("description") ?: "No description provided."
 
@@ -169,7 +167,7 @@ class FunctionProcessor(
             paramList.add(generateParamDef(param))
         }
 
-        return CampgroundDocComponent(
+        return CampgroundComponent(
             name = funcName,
             description = description,
             props = paramList
@@ -177,14 +175,14 @@ class FunctionProcessor(
     }
 
     @OptIn(KspExperimental::class)
-    private fun generateParamDef(param: KSValueParameter): CampgroundDocComponentProp {
+    private fun generateParamDef(param: KSValueParameter): CampgroundProp {
         val name = param.name!!.asString()
         val default = param.hasDefault
         val typeName = param.type.resolve().declaration.simpleName.asString()
         val annotation = param.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundProp")
         val description = annotation?.getArgumentValueAsString("description") ?: "Not provided."
 
-        return CampgroundDocComponentProp(
+        return CampgroundProp(
             name,
             typeName,
             default,

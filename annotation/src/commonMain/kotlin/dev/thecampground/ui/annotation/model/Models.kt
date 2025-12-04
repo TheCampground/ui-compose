@@ -1,25 +1,25 @@
-package dev.thecampground.ui.annotation
+package dev.thecampground.ui.annotation.model
 
 // I know, the name is funny, but technically accurate.
-enum class CampgroundDocTypeType {
+enum class CampgroundTypeType {
     CLASS,
     FUNCTION
 }
 
-data class CampgroundDocComponent(
+data class CampgroundComponent(
     val name: String,
     val description: String = "No description provided",
-    val props: List<CampgroundDocComponentProp> = listOf()
+    val props: List<CampgroundProp> = listOf()
 )
 
-data class CampgroundDocType(
+data class CampgroundType(
     val name: String,
     val description: String,
     val properties: List<String> = listOf(),
-    val type: CampgroundDocTypeType
+    val type: CampgroundTypeType
 )
 
-data class CampgroundDocComponentProp(
+data class CampgroundProp(
     val name: String,
     val type: String,
     val default: Boolean = false,
