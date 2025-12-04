@@ -20,6 +20,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.joinToCode
 import dev.thecampground.ui.annotation.CampgroundDocComponent
 import dev.thecampground.ui.annotation.CampgroundDocComponentProp
 
@@ -55,6 +56,10 @@ class FunctionProcessor(
 
         val pkg = collectedComponents.first().first.packageName.asString()
 
+        val grouped = collectedComponents.groupBy { (fn, _) ->
+            fn.simpleName.asString()
+        }
+
         val file = codeGenerator.createNewFile(
             Dependencies(false, *collectedComponents.map { it.first.containingFile!! }.toTypedArray()),
             pkg,
@@ -62,19 +67,36 @@ class FunctionProcessor(
             "kt"
         )
 
-        val componentExprs = collectedComponents.map { (_, comp) ->
-            buildComponentExpr(comp)
+        val mapEntries = grouped.map { (name, comps) ->
+            val componentExprs = comps.map { (_, comp) -> buildComponentExpr(comp) }
+
+            val listBlock = componentExprs
+                .map { CodeBlock.of("%L", it) }
+                .joinToCode(separator = ",\n")
+
+            CodeBlock.builder()
+                .add("\n%S to listOf(\n", name)
+                .indent()
+                .add(listBlock)
+                .unindent()
+                .add("\n)")
+                .build()
         }
 
+
+
         val definitionsProp = PropertySpec.builder(
-            "definitions",
-            List::class.asClassName().parameterizedBy(
-                ClassName("dev.thecampground.ui.annotation", "CampgroundDocComponent")
+            "componentDefinitions",
+            Map::class.asClassName().parameterizedBy(
+                String::class.asClassName(),
+                List::class.asClassName().parameterizedBy(
+                    ClassName("dev.thecampground.ui.annotation", "CampgroundDocComponent")
+                )
             )
         )
             .initializer(
-                componentExprs.joinToString(prefix = "listOf(\n", postfix = "\n)") { "%L" },
-                *componentExprs.toTypedArray()
+                mapEntries.joinToString(prefix = "mapOf(\n", postfix = "\n)") { "%L" },
+                *mapEntries.toTypedArray()
             )
             .build()
 
@@ -105,7 +127,7 @@ class FunctionProcessor(
         }
 
         return CodeBlock.builder()
-            .add("\nCampgroundDocComponent(\n")
+            .add("CampgroundDocComponent(\n")
             .indent()
             .add("name = %S,\n", comp.name)
             .add("description = %S,\n", comp.description)

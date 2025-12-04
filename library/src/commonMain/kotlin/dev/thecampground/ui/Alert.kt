@@ -18,8 +18,11 @@ import androidx.compose.ui.unit.sp
 import dev.thecampground.ui.annotation.CampgroundDocComponent
 import dev.thecampground.ui.annotation.CampgroundUIComponent
 import dev.thecampground.ui.annotation.CampgroundUIComponentProp
+import dev.thecampground.ui.annotation.CampgroundUIType
 
 private const val ALERT_ICON_SIZE = 20
+
+@CampgroundUIType
 class AlertVariant(
     val background: Color,
     val foreground: Color,
