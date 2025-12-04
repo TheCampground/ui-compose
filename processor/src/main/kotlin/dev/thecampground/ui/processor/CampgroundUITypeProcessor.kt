@@ -9,27 +9,31 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeAlias
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import dev.thecampground.ui.annotation.CampgroundDocComponent
 import dev.thecampground.ui.annotation.CampgroundDocType
-import dev.thecampground.ui.annotation.CampgroundUIComponent
-import dev.thecampground.ui.annotation.CampgroundUIType
+import dev.thecampground.ui.annotation.CampgroundDocTypeType
+import kotlin.system.exitProcess
 
 class CampgroundUITypeProcessor(
     val codeGenerator: CodeGenerator,
     val logger: KSPLogger
 ) : SymbolProcessor {
     private var fileAlreadyGenerated = false
-    private var collectedClasses = mutableListOf<Pair<KSClassDeclaration, CampgroundDocType>>()
+    private var collectedItems = mutableListOf<Pair<KSDeclaration, CampgroundDocType>>()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation("dev.thecampground.ui.annotation.CampgroundUIType", inDepth = true)
@@ -37,8 +41,8 @@ class CampgroundUITypeProcessor(
         val invalid = symbols.filter { !it.validate() }.toList()
 
         symbols
-            .filter {  it is KSClassDeclaration && it.validate() }
-            .forEach { it.accept(CampgroundUITypeClassVisitor(), Unit) }
+            .filter {  it is KSClassDeclaration || it is KSTypeAlias && it.validate() }
+            .forEach { it.accept(CampgroundUITypeVisitor(), Unit) }
 
         if (!fileAlreadyGenerated) {
             generateCombinedFile()
@@ -49,18 +53,18 @@ class CampgroundUITypeProcessor(
     }
 
     private fun generateCombinedFile() {
-        if (collectedClasses.isEmpty()) return
+        if (collectedItems.isEmpty()) return
 
         val pkg = "dev.thecampground.ui.internal"
 
         val file = codeGenerator.createNewFile(
-            Dependencies(false, *collectedClasses.map { it.first.containingFile!! }.toTypedArray()),
+            Dependencies(false, *collectedItems.map { it.first.containingFile!! }.toTypedArray()),
             pkg,
             "CampgroundUIDocTypeDefinitions",
             "kt"
         )
 
-        val typeExprs = collectedClasses.map { (clazz, type) ->
+        val typeExpressions = collectedItems.map { (clazz, type) ->
             val key = clazz.simpleName.asString()
             CodeBlock.of("%S to %L", key, buildTypeExpr(type))
         }
@@ -72,17 +76,19 @@ class CampgroundUITypeProcessor(
                 ClassName("dev.thecampground.ui.annotation", "CampgroundDocType")
             )
         ).initializer(
-            typeExprs.joinToString(prefix = "mapOf(\n", postfix = "\n)") { "%L" },
-            *typeExprs.toTypedArray()
+            typeExpressions.joinToString(prefix = "mapOf(\n", postfix = "\n)") { "%L" },
+            *typeExpressions.toTypedArray()
         ).build()
 
         val objType = TypeSpec.objectBuilder("CampgroundUIDocTypeDefinitions")
             .addProperty(typeDefinitions)
+            .addModifiers(KModifier.INTERNAL)
             .build()
 
         val fileSpec = FileSpec.builder(pkg, "CampgroundUIDocTypeDefinitions")
             .addType(objType)
             .addImport("dev.thecampground.ui.annotation", "CampgroundDocType")
+            .addImport("dev.thecampground.ui.annotation", "CampgroundDocTypeType")
             .build()
 
         file.writer().use { writer ->
@@ -105,16 +111,20 @@ class CampgroundUITypeProcessor(
                 }
             }
             .unindent()
-            .add(")\n")
+            .add("),\n")
             .unindent()
+            .add("type = CampgroundDocTypeType.${comp.type.name},\n")
             .add(")")
             .build()
     }
-    private fun genTypeDef(clazz: KSClassDeclaration): CampgroundDocType {
+    private fun generateTypeForClass(clazz: KSClassDeclaration): CampgroundDocType {
         val className = clazz.simpleName.asString()
         val companionObj = clazz.declarations
             .filterIsInstance<KSClassDeclaration>()
             .firstOrNull() { it.isCompanionObject }
+        val description =  clazz
+            .getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundUIType")
+            ?.getArgumentValueAsString("description") ?: "Not provided"
 
         val properties = when (companionObj) {
             null -> listOf<String>()
@@ -124,16 +134,49 @@ class CampgroundUITypeProcessor(
         return CampgroundDocType(
             name = className,
             description = "Not provided",
-            properties = properties
+            properties = properties,
+            type = CampgroundDocTypeType.CLASS
         )
     }
-    inner class CampgroundUITypeClassVisitor() : KSVisitorVoid() {
+    
+    private fun generateTypeForAlias(alias: KSTypeAlias): CampgroundDocType {
+        val aliasName = alias.simpleName.asString()
+        val resolvedType = alias.type.resolve()
+        val aliasIsFunc = resolvedType.isFunctionType
+        val description = alias
+            .getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundUIType")
+            ?.getArgumentValueAsString("description") ?: "Not provided"
+
+        if (!aliasIsFunc) {
+            logger.warn("Typealiases that are not functions are not supported.")
+            exitProcess(1)
+        }
+
+        // TODO: Null check
+        val functionParameters = resolvedType.arguments.dropLast(1).map { it.type!!.resolve().declaration.simpleName.asString() }
+
+        return CampgroundDocType(
+            name = aliasName,
+            description = description,
+            properties = functionParameters,
+            type = CampgroundDocTypeType.FUNCTION,
+        )
+    }
+    inner class CampgroundUITypeVisitor() : KSVisitorVoid() {
         override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
-            val def = genTypeDef(classDeclaration)
-            collectedClasses.add(classDeclaration to def)
+            val def = generateTypeForClass(classDeclaration)
+            collectedItems.add(classDeclaration to def)
+        }
+
+        override fun visitTypeAlias(typeAlias: KSTypeAlias, data: Unit) {
+            val def = generateTypeForAlias(typeAlias)
+
+            collectedItems.add(typeAlias to def)
         }
     }
+
 }
+
 
 class CampgroundTypeProcessorProvider : SymbolProcessorProvider {
     override fun create(

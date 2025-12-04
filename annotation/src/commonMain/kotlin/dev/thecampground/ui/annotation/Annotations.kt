@@ -9,9 +9,9 @@ annotation class CampgroundUIComponent(val uniqueName: String, val description: 
 @Retention(AnnotationRetention.SOURCE)
 annotation class CampgroundUIComponentExample
 
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.TYPEALIAS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class CampgroundUIType
+annotation class CampgroundUIType(val description: String = "Not provided.")
 
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.SOURCE)
