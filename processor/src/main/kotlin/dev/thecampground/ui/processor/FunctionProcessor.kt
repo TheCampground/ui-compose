@@ -86,19 +86,13 @@ class FunctionProcessor(
                 .build()
         }
 
-        val examples = mutableListOf<String>()
-
-        for ((_, wrapper) in collectedComponents) {
-            if (wrapper.example != null) examples.add(wrapper.example)
-        }
-
 
         val definitionsProp = PropertySpec.builder(
             "componentDefinitions",
             Map::class.asClassName().parameterizedBy(
                 String::class.asClassName(),
                 List::class.asClassName().parameterizedBy(
-                    ClassName("dev.thecampground.ui.internal", "CampgroundDocComponent")
+                    ClassName("dev.thecampground.ui.annotation", "CampgroundDocComponent")
                 )
             )
         )
@@ -114,9 +108,9 @@ class FunctionProcessor(
 
         val fileSpec = FileSpec.builder(pkg, "CampgroundUIDocDefinitions")
             .addType(objType)
-            .addImport("dev.thecampground.ui.internal", "CampgroundDocComponent")
+            .addImport("dev.thecampground.ui.annotation", "CampgroundDocComponent")
             .addImport("dev.thecampground.ui.annotation", "CampgroundDocComponentProp")
-            .addImport(packageName = "dev.thecampground.ui.examples", names = examples.toTypedArray())
+//            .addImport(packageName = "dev.thecampground.ui.examples", names = examples.toTypedArray())
             .build()
 
         file.writer().use { writer ->
@@ -141,11 +135,10 @@ class FunctionProcessor(
             .add("CampgroundDocComponent(\n")
             .indent()
             .add("name = %S,\n", comp.name)
-            .add("uniqueName = %S,\n", comp.uniqueName)
             .add("description = %S,\n", comp.description)
-            .apply {
-                if (wrapper.example != null) add("example = { %L() },\n", wrapper.example)
-            }
+//            .apply {
+//                if (wrapper.example != null) add("example = { %L() },\n", wrapper.example)
+//            }
             .add("props = listOf(\n")
             .indent()
             .apply {
@@ -198,15 +191,11 @@ class FunctionProcessor(
             paramList.add(generateParamDef(param))
         }
 
-        return CampgroundDocComponentExampleWrapper(
-            component = CampgroundDocComponent(
-                uniqueName = uniqueName,
-                name = funcName,
-                description = description,
-                props = paramList
-            ),
-                example = uniqueName
-            )
+        return CampgroundDocComponent(
+            name = funcName,
+            description = description,
+            props = paramList
+        )
     }
 
     @OptIn(KspExperimental::class)
