@@ -1,11 +1,9 @@
 package dev.thecampground.ui.annotation
 
-
-
 data class CampgroundDocComponent(
+    val uniqueName: String,
     val name: String,
     val description: String = "No description provided",
-    val examples: List<String> = listOf(),
     val props: List<CampgroundDocComponentProp> = listOf()
 )
 
