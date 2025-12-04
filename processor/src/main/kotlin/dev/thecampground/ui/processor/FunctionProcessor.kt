@@ -135,11 +135,23 @@ class FunctionProcessor(
     private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundDocComponent {
         val funcName = func.simpleName.asString()
         val paramList = mutableListOf<CampgroundDocComponentProp>()
+        val annotation = func.annotations.firstOrNull { ann ->
+            ann.annotationType
+                .resolve()
+                .declaration
+                .qualifiedName
+                ?.asString() == "dev.thecampground.ui.annotation.CampgroundUIComponent"
+        }
+        val description = annotation
+            ?.arguments
+            ?.firstOrNull { it.name?.asString() == "description" }
+            ?.value as? String ?: ""
+
         func.parameters.forEach { param ->
             paramList.add(generateParamDef(param))
         }
 
-        return CampgroundDocComponent(funcName, "Rofl", props = paramList)
+        return CampgroundDocComponent(funcName, description, props = paramList)
     }
 
     @OptIn(KspExperimental::class)
