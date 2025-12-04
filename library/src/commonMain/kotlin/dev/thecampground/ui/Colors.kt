@@ -14,6 +14,8 @@ object Colors {
     val SECONDARY_BUTTON_HOVERED = Color.hsl(111f, .12f, .88f)
     val GHOST_BUTTON_HOVERED = Color.hsl(34f, .45f, 0.9f)
     val BRAND_FOREGROUND = Color.hsl(12f, 0.06f, .15f)
+    val BORDER = Color.hsl(240f, 0.06f, .1f)
+
     val TEXT_ALT = Color.hsl(0f, 0f, 0.32f)
     // Alert default
     val ALERT_DEFAULT_BACKGROUND = BRAND.copy(alpha = 0.3f)
