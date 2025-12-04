@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import camgroundui.showcase.composeapp.generated.resources.Res
+import camgroundui.showcase.composeapp.generated.resources.SourceCodePro_Variable
 import camgroundui.showcase.composeapp.generated.resources.SpaceGrotesk_Variable
 import org.jetbrains.compose.resources.Font
 
@@ -46,3 +47,14 @@ fun spaceGroteskTypography() = Typography().let {
             labelSmall = it.labelSmall.copy(fontFamily = fontFamily)
         )
 }
+
+@Composable
+fun sourceCodeProFamily() = FontFamily(
+    Font(Res.font.SourceCodePro_Variable, weight = FontWeight.Light, variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Light.weight))),
+    Font(Res.font.SourceCodePro_Variable, weight = FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Normal.weight))),
+    Font(Res.font.SourceCodePro_Variable, weight = FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Medium.weight))),
+    Font(Res.font.SourceCodePro_Variable, weight = FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.SemiBold.weight))),
+    Font(Res.font.SourceCodePro_Variable, weight = FontWeight.Bold, variationSettings = FontVariation.Settings( FontVariation.weight(FontWeight.Bold.weight))),
+    Font(Res.font.SourceCodePro_Variable, weight = FontWeight.ExtraBold, variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraBold.weight))),
+    Font(Res.font.SourceCodePro_Variable, weight = FontWeight.Black, variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Black.weight)))
+)
