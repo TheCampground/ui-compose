@@ -1,2 +1,3 @@
 dev.thecampground.ui.processor.BuilderProcessorProvider
 dev.thecampground.ui.processor.CampgroundTypeProcessorProvider
+dev.thecampground.ui.processor.CampgroundUIComponentExampleProvider
