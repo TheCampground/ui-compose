@@ -8,6 +8,7 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSValueParameter
@@ -23,12 +24,14 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.joinToCode
 import dev.thecampground.ui.annotation.CampgroundDocComponent
 import dev.thecampground.ui.annotation.CampgroundDocComponentProp
+import kotlin.system.exitProcess
 
+data class CampgroundDocComponentExampleWrapper(val component: CampgroundDocComponent, val example: String? = null)
 class FunctionProcessor(
     val codeGenerator: CodeGenerator,
     val logger: KSPLogger
 ) : SymbolProcessor {
-    private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, CampgroundDocComponent>>()
+    private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, CampgroundDocComponentExampleWrapper>>()
     private var fileAlreadyGenerated = false
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -83,6 +86,11 @@ class FunctionProcessor(
                 .build()
         }
 
+        val examples = mutableListOf<String>()
+
+        for ((_, wrapper) in collectedComponents) {
+            if (wrapper.example != null) examples.add(wrapper.example)
+        }
 
 
         val definitionsProp = PropertySpec.builder(
@@ -90,7 +98,7 @@ class FunctionProcessor(
             Map::class.asClassName().parameterizedBy(
                 String::class.asClassName(),
                 List::class.asClassName().parameterizedBy(
-                    ClassName("dev.thecampground.ui.annotation", "CampgroundDocComponent")
+                    ClassName("dev.thecampground.ui.internal", "CampgroundDocComponent")
                 )
             )
         )
@@ -106,8 +114,9 @@ class FunctionProcessor(
 
         val fileSpec = FileSpec.builder(pkg, "CampgroundUIDocDefinitions")
             .addType(objType)
-            .addImport("dev.thecampground.ui.annotation", "CampgroundDocComponent")
+            .addImport("dev.thecampground.ui.internal", "CampgroundDocComponent")
             .addImport("dev.thecampground.ui.annotation", "CampgroundDocComponentProp")
+            .addImport(packageName = "dev.thecampground.ui.examples", names = examples.toTypedArray())
             .build()
 
         file.writer().use { writer ->
@@ -115,7 +124,9 @@ class FunctionProcessor(
         }
     }
 
-    private fun buildComponentExpr(comp: CampgroundDocComponent): CodeBlock {
+    private fun buildComponentExpr(wrapper: CampgroundDocComponentExampleWrapper): CodeBlock {
+        val comp = wrapper.component
+
         val propsList = comp.props.map { prop ->
             CodeBlock.of(
                 "CampgroundDocComponentProp(name = %S, type = %S, default = %L, description = %S)",
@@ -130,8 +141,11 @@ class FunctionProcessor(
             .add("CampgroundDocComponent(\n")
             .indent()
             .add("name = %S,\n", comp.name)
+            .add("uniqueName = %S,\n", comp.uniqueName)
             .add("description = %S,\n", comp.description)
-            .add("examples = emptyList(),\n")
+            .apply {
+                if (wrapper.example != null) add("example = { %L() },\n", wrapper.example)
+            }
             .add("props = listOf(\n")
             .indent()
             .apply {
@@ -154,7 +168,7 @@ class FunctionProcessor(
         }
     }
 
-    private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundDocComponent {
+    private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundDocComponentExampleWrapper {
         val funcName = func.simpleName.asString()
         val paramList = mutableListOf<CampgroundDocComponentProp>()
         val annotation = func.annotations.firstOrNull { ann ->
@@ -169,11 +183,30 @@ class FunctionProcessor(
             ?.firstOrNull { it.name?.asString() == "description" }
             ?.value as? String ?: ""
 
+       val uniqueName = annotation
+           ?.arguments
+           ?.firstOrNull { it.name?.asString() == "uniqueName" }
+           ?.value as? String
+
+        // TODO: Probably a better way to see if a component has a unique name.
+        if (uniqueName == null || collectedComponents.find { comp -> comp.second.component.uniqueName == uniqueName } != null) {
+            println("CampgroundUIComponent \"${funcName}\" MUST have a unique name specified!")
+            exitProcess(1)
+        }
+
         func.parameters.forEach { param ->
             paramList.add(generateParamDef(param))
         }
 
-        return CampgroundDocComponent(funcName, description, props = paramList)
+        return CampgroundDocComponentExampleWrapper(
+            component = CampgroundDocComponent(
+                uniqueName = uniqueName,
+                name = funcName,
+                description = description,
+                props = paramList
+            ),
+                example = uniqueName
+            )
     }
 
     @OptIn(KspExperimental::class)
