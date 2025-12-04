@@ -11,3 +11,4 @@ kotlin {
         browser()
     }
 }
+

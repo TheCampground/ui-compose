@@ -45,6 +45,13 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(project(":library"))
             implementation(project(":annotation"))
+
+            // Voyager Nav
+
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screenModel)
+            implementation(libs.voyager.transitions)
+            implementation("dev.snipme:highlights:1.1.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -75,6 +82,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
