@@ -2,12 +2,14 @@ package dev.thecampground.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -58,11 +60,11 @@ class AlertVariant(
 }
 
 @Composable
-@CampgroundUIComponent(description = "Displays a callout for user attention.")
+@CampgroundUIComponent(uniqueName = "BaseAlert", description = "Displays a callout for user attention.")
 fun BaseAlert(
     @CampgroundUIComponentProp(description = "The variant of the alert")
     variant: AlertVariant,
-    icon: @Composable (tint: Color, size: Dp) -> Unit,
+    icon: IconComposable,
     content: @Composable (tint: Color) -> Unit
 ) {
     Row(
@@ -76,21 +78,23 @@ fun BaseAlert(
                     shape = RoundedInputShape
                 )
                 .background(variant.background)
-                .padding(12.dp)
+                .padding(12.dp),
+        verticalAlignment = Alignment.Top
     ) {
+
         icon(variant.foreground, ALERT_ICON_SIZE.dp)
 
-        Column(modifier = Modifier.padding(start = 14.dp)) {
+        Column(modifier = Modifier.padding(start = 14.dp), verticalArrangement = Arrangement.Center) {
             content(variant.foreground)
         }
     }
 }
 
 @Composable
-@CampgroundUIComponent(description = "Displays a callout for user attention.")
+@CampgroundUIComponent(uniqueName = "AlertContentSlot", description = "Displays a callout for user attention.")
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
-    icon: @Composable (tint: Color, size: Dp) -> Unit,
+    icon: IconComposable,
     content: @Composable (tint: Color) -> Unit
 ) {
     val colors = when (variant) {
@@ -109,16 +113,14 @@ fun Alert(
     }
 }
 
-@CampgroundUIComponent(description = "Displays a callout for user attention.")
+@CampgroundUIComponent(uniqueName = "Alert", description = "Displays a callout for user attention.")
 @Composable
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
-    icon: @Composable (tint: Color, size: Dp) -> Unit,
+    icon: IconComposable,
     title: String? = null,
     content: String
 ) {
-
-
     val colors = when (variant) {
         AlertVariants.DEFAULT -> AlertVariant.DEFAULT
         AlertVariants.SUCCESS -> AlertVariant.SUCCESS
@@ -132,9 +134,8 @@ fun Alert(
         icon = icon,
     ) { tint ->
         if (title != null) {
-            Text(title, color = tint, fontSize = 18.sp, letterSpacing = (-0.5).sp, fontWeight = FontWeight.W600)
+            Text(title, color = tint, fontSize = 18.sp, lineHeight = 24.sp, letterSpacing = (-0.5).sp, fontWeight = FontWeight.W600)
         }
-
         Text(content, color = tint, fontSize = 16.sp, letterSpacing = (-0.5).sp, fontWeight = FontWeight.W400)
     }
 }
