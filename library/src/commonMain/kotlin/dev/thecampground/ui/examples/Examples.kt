@@ -16,10 +16,10 @@ import dev.thecampground.ui.Button
 import dev.thecampground.ui.Colors
 import dev.thecampground.ui.DefaultButtonColors
 import dev.thecampground.ui.InputSizes
-import dev.thecampground.ui.annotation.CampgroundUIComponentExample
+import dev.thecampground.ui.annotation.CampgroundExample
 
 @Composable
-@CampgroundUIComponentExample
+@CampgroundExample
 internal fun BaseButton() {
     BaseButton(
         onClick = {},
@@ -35,12 +35,12 @@ internal fun BaseButton() {
 }
 
 @Composable
-@CampgroundUIComponentExample
+@CampgroundExample
 internal fun Button() {
     Button(onClick = {}, text = "My text!")
 }
 @Composable
-@CampgroundUIComponentExample
+@CampgroundExample
 internal fun ButtonContentSlot() {
     Button(onClick = {}, text = "My text!")
 }
@@ -48,7 +48,7 @@ internal fun ButtonContentSlot() {
 
 
 @Composable
-@CampgroundUIComponentExample
+@CampgroundExample
 internal fun BaseAlert() {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Alert(
@@ -79,13 +79,13 @@ internal fun BaseAlert() {
 }
 
 @Composable
-@CampgroundUIComponentExample
+@CampgroundExample
 internal fun AlertContentSlot() {
     Button(onClick = {}, text = "My text!")
 }
 
 @Composable
-@CampgroundUIComponentExample
+@CampgroundExample
 internal fun Alert() {
 
 }

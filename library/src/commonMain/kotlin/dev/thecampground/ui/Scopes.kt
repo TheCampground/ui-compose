@@ -3,10 +3,10 @@ package dev.thecampground.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import dev.thecampground.ui.annotation.CampgroundUIType
+import dev.thecampground.ui.annotation.CampgroundType
 
-@CampgroundUIType
+@CampgroundType
 typealias IconComposable = @Composable (tint: Color, size: Dp) -> Unit
 
-@CampgroundUIType
+@CampgroundType
 typealias TextComposable = @Composable (tint: Color) -> Unit
