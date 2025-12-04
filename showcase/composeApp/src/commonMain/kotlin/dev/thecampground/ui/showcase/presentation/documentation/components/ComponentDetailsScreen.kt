@@ -76,7 +76,7 @@ data class ComponentDetailsScreen(val component: String) : Screen {
                     description = component.description
                 ) {
 
-                    val firstExample = CampgroundUIExamples.exampleDefinitions[component.uniqueName]
+                    val firstExample = CampgroundUIExamples.exampleDefinitions[component.name]
                     if (firstExample != null) {
 
                         val highlights by remember {
@@ -123,7 +123,7 @@ data class ComponentDetailsScreen(val component: String) : Screen {
                                     .fillMaxWidth()
                                     .defaultMinSize(minHeight = 128.dp)
                             ) {
-                                component.example?.let { it() }
+//                                component.example?.let { it() }
                             }
 
                             Column(
