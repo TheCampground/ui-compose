@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -53,7 +52,7 @@ kotlin {
                 implementation(libs.voyager.navigator)
                 implementation(libs.voyager.screenModel)
                 implementation(libs.voyager.transitions)
-                implementation("dev.snipme:highlights:1.1.0")
+                implementation(libs.highlights)
             }
         }
         commonTest.dependencies {

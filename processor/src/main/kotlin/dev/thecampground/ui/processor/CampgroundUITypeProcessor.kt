@@ -16,7 +16,6 @@ import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
@@ -129,7 +128,7 @@ class CampgroundUITypeProcessor(
 
         return CampgroundType(
             name = className,
-            description = "Not provided",
+            description = description,
             properties = properties,
             type = CampgroundTypeType.CLASS
         )

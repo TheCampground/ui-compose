@@ -58,7 +58,8 @@ class AlertVariant(
 }
 
 @Composable
-@CampgroundComponent(uniqueName = "BaseAlert", description = "Displays a callout for user attention.")
+@CampgroundComponent(description = "Displays a callout for user attention.")
+@Suppress("unused")
 fun BaseAlert(
     @CampgroundProp(description = "The variant of the alert")
     variant: AlertVariant,
@@ -89,7 +90,8 @@ fun BaseAlert(
 }
 
 @Composable
-@CampgroundComponent(uniqueName = "AlertContentSlot", description = "Displays a callout for user attention.")
+@CampgroundComponent(description = "Displays a callout for user attention.")
+@Suppress("unused")
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
     icon: IconComposable,
@@ -111,8 +113,9 @@ fun Alert(
     }
 }
 
-@CampgroundComponent(uniqueName = "Alert", description = "Displays a callout for user attention.")
+@CampgroundComponent(description = "Displays a callout for user attention.")
 @Composable
+@Suppress("unused")
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
     icon: IconComposable,

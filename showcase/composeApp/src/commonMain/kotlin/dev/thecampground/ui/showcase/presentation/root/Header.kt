@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.painterResource
 fun Header(hamburgerVisible: Boolean = false, hamburgerOnClick: () -> Unit = {}) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.Companion.background(Colors.BG_SECONDARY)
+            modifier = Modifier.background(Colors.BG_SECONDARY)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

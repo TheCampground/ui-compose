@@ -1,7 +1,6 @@
 package dev.thecampground.ui.showcase
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,10 +26,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -57,13 +54,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun Docs() {
-    // Header
-    var navigationMenuOpen by remember { mutableStateOf(false) }
-    // Animate the blur smoothly when menu opens/closes
-    val blurAmount by animateDpAsState(
-        targetValue = if (navigationMenuOpen) 2.dp else 0.dp,
-        label = "blurAnimation"
-    )
+    val navigationMenuOpen = remember { mutableStateOf(false) }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -82,7 +73,7 @@ fun Docs() {
 
             Column {
                 Header(hamburgerVisible = boxWidth < 800.dp, hamburgerOnClick = {
-                    navigationMenuOpen = true
+                    navigationMenuOpen.value = true
                 })
 
                 Column(verticalArrangement = Arrangement.spacedBy(18.dp), modifier = Modifier.padding(14.dp)) {
@@ -123,7 +114,7 @@ fun Docs() {
 
         // Floating navigation overlay for small screens
         if (boxWidth < 800.dp) {
-            AnimatedVisibility(navigationMenuOpen, enter = fadeIn() + slideInHorizontally(), exit = fadeOut() + slideOutHorizontally()) {
+            AnimatedVisibility(visible = navigationMenuOpen.value, enter = fadeIn() + slideInHorizontally(), exit = fadeOut() + slideOutHorizontally()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -133,8 +124,8 @@ fun Docs() {
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
-                        navigationMenuOpen = false
-
+                        @Suppress("UNUSED_VARIABLE")
+                        navigationMenuOpen.value = false
                     }
             ) {
                 // Your actual navigation menu
@@ -169,13 +160,13 @@ fun Docs() {
 }
 
 @Composable
-fun NavigationMenu(modifier: Modifier = Modifier) {
+fun NavigationMenu(@Suppress("UNUSED_VARIABLE") modifier: Modifier = Modifier) {
     val componentDefinitions = CampgroundComponents.components
     Column(
         modifier = Modifier.background(Colors.BG).fillMaxHeight().width(300.dp)
             .padding(18.dp)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(18.dp), modifier = modifier) {
             Column {
                 NavigationMenuSubTitle("DOCS")
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -2,7 +2,7 @@ package dev.thecampground.ui.annotation
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
-annotation class CampgroundComponent(val uniqueName: String, val description: String = "No description provided")
+annotation class CampgroundComponent(val description: String = "No description provided")
 
 
 @Target(AnnotationTarget.FUNCTION)

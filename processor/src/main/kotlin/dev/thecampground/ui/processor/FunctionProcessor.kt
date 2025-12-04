@@ -26,6 +26,7 @@ import dev.thecampground.ui.annotation.model.CampgroundProp
 
 class FunctionProcessor(
     val codeGenerator: CodeGenerator,
+    @Suppress("unused")
     val logger: KSPLogger
 ) : SymbolProcessor {
     private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, CampgroundComponent>>()
