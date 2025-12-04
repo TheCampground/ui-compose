@@ -40,6 +40,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.thecampground.ui.annotation.CampgroundUIComponent
+import dev.thecampground.ui.annotation.CampgroundUIComponentProp
 
 
 val DefaultButtonColors = ButtonColors(
@@ -84,13 +86,21 @@ internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
 }
 
 @Composable
+@CampgroundUIComponent
 fun BaseButton(
+    @CampgroundUIComponentProp(description = "Fires an event when the button is clicked.")
     onClick: () -> Unit,
+    @CampgroundUIComponentProp(description = "Control the button sizes.")
     size: InputSizes = InputSizes.DEFAULT,
+    @CampgroundUIComponentProp(description = "Set the button colours.")
     colors: ButtonColors = DefaultButtonColors,
+    @CampgroundUIComponentProp(description = "Set the hover color for the button.")
     hoverColor: Color = Colors.DEFAULT_BUTTON_HOVERED,
+    @CampgroundUIComponentProp()
     modifier: Modifier = Modifier,
+    @CampgroundUIComponentProp(description = "Have custom input feedback.")
     feedback: InputTouchFeedback? = null,
+    @CampgroundUIComponentProp(description = "Add any content slot.")
     content: @Composable () -> Unit
 ) {
 
@@ -158,6 +168,7 @@ fun BaseButton(
 }
 
 @Composable
+@CampgroundUIComponent
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
@@ -187,6 +198,7 @@ fun Button(
 }
 
 @Composable
+@CampgroundUIComponent
 fun Button(
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
