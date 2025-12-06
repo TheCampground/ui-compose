@@ -17,7 +17,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App() {
     val theme = LocalCampgroundTheme.current
-
+    // TODO: Theme animation
     MaterialTheme(typography = spaceGroteskTypography()) {
             Box(Modifier.background(theme.background)) {
                 Navigator(HomeScreen()) { nav ->
