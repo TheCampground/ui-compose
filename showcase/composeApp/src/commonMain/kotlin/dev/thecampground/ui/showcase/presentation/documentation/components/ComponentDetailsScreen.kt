@@ -41,6 +41,7 @@ import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
 import dev.thecampground.ui.Colors
 import dev.thecampground.ui.InputSizes
+import dev.thecampground.ui.LocalCampgroundTheme
 import dev.thecampground.ui.RoundedPreviewShape
 import dev.thecampground.ui.showcase.internal.generateAnnotatedString
 import dev.thecampground.ui.showcase.presentation.documentation.DocumentationRoot
@@ -54,6 +55,7 @@ data class ComponentDetailsScreen(val component: String) : Screen {
     override fun Content() {
         val component = CampgroundComponents.components[component]?.first()
         val scrollState = rememberScrollState()
+        val theme = LocalCampgroundTheme.current
 
         BoxWithConstraints(modifier = Modifier.verticalScroll(scrollState)) {
             if (component == null) {
@@ -61,7 +63,8 @@ data class ComponentDetailsScreen(val component: String) : Screen {
             } else {
                 DocumentationRoot(
                     name = component.name,
-                    description = component.description
+                    description = component.description,
+                    theme,
                 ) {
 
                     val firstExample = null

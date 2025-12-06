@@ -42,6 +42,7 @@ import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
 import dev.thecampground.ui.Colors
 import dev.thecampground.ui.InputSizes
+import dev.thecampground.ui.LocalCampgroundTheme
 import dev.thecampground.ui.RoundedInputShapeFull
 import dev.thecampground.ui.RoundedInputShapePill
 import dev.thecampground.ui.showcase.presentation.documentation.DocumentationScreen
@@ -52,6 +53,7 @@ class HomeScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val theme = LocalCampgroundTheme.current
 
         Column() {
             Box() {
@@ -65,7 +67,7 @@ class HomeScreen : Screen {
                     ) {
 
                         Row(
-                            Modifier.clip(RoundedInputShapeFull).background(Colors.BG_DARK)
+                            Modifier.clip(RoundedInputShapeFull).background(theme.inverse)
                                 .padding(horizontal = 18.dp, vertical = 8.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -74,11 +76,11 @@ class HomeScreen : Screen {
                                 painterResource(Res.drawable.campground),
                                 contentDescription = "Campground Logo",
                                 Modifier.size(18.dp),
-                                tint = Color.White
+                                tint = theme.background
                             )
                             Box(
                                 modifier = Modifier.height(18.dp).width(1.dp)
-                                    .background(Color.White.copy(alpha = 0.5f))
+                                    .background(theme.background.copy(alpha = 0.5f))
                             )
                             Text(buildAnnotatedString {
                                 append("campground/compose-ui is now in ")
@@ -87,7 +89,7 @@ class HomeScreen : Screen {
                                 }
                                 append("!")
 
-                            }, fontSize = 14.sp, color = Color.White, fontWeight = FontWeight.Light)
+                            }, fontSize = 14.sp, color = theme.background, fontWeight = FontWeight.Normal)
                         }
 
                         Text(
@@ -96,7 +98,7 @@ class HomeScreen : Screen {
                             fontSize = 64.sp,
                             lineHeight = 64.sp,
                             textAlign = TextAlign.Center,
-                            color = Colors.BG_DARK
+                            color = theme.inverse,
                         )
 
                         Text(
@@ -114,7 +116,7 @@ class HomeScreen : Screen {
                                 append(" projects.")
                             },
                             fontSize = 18.sp,
-                            color = Colors.TEXT_ALT,
+                            color = theme.text.secondary,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.W400
                         )
