@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     kotlin("multiplatform")
 }
@@ -7,7 +11,7 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
     iosX64()
-    js {
+    wasmJs() {
         browser()
     }
 }

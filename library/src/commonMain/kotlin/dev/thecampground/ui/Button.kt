@@ -36,44 +36,7 @@ import dev.thecampground.ui.annotation.CampgroundType
 
 
 private const val BUTTON_ICON_SIZE = 18
-val DefaultButtonColors = ButtonColors(
-    containerColor = Colors.BG_DARK,
-    contentColor = Colors.BG,
-    disabledContainerColor = Colors.BG_DARK.copy(alpha = 0.8f),
-    disabledContentColor = Colors.BG.copy(alpha = 0.8f)
-)
 
-val PrimaryButtonColors = ButtonColors(
-    containerColor = Colors.BRAND,
-    contentColor = Colors.BG_DARK,
-    disabledContainerColor = Colors.BRAND.copy(alpha = 0.8f),
-    disabledContentColor = Colors.BG_DARK.copy(alpha = 0.8f)
-)
-
-val SecondaryButtonColors = ButtonColors(
-    containerColor = Colors.SECONDARY_BUTTON,
-    contentColor = Colors.BG_DARK,
-    disabledContainerColor = Colors.SECONDARY_BUTTON.copy(alpha = 0.8f),
-    disabledContentColor = Colors.BG_DARK.copy(alpha = 0.8f)
-)
-
-val GhostButtonColors = ButtonColors(
-    containerColor = Color.Transparent,
-    contentColor = Colors.BG_DARK,
-    disabledContainerColor = Color.Transparent,
-    disabledContentColor = Colors.BG_DARK.copy(alpha = 0.8f)
-)
-
-@CampgroundType
-internal class ButtonVariant(val color: ButtonColors, val hoverColor: Color) {
-
-    companion object {
-        val DEFAULT = ButtonVariant(color = DefaultButtonColors, hoverColor = Colors.DEFAULT_BUTTON_HOVERED)
-        val PRIMARY = ButtonVariant(color = PrimaryButtonColors, hoverColor = Colors.PRIMARY_BUTTON_HOVERED)
-        val SECONDARY = ButtonVariant(color = SecondaryButtonColors, hoverColor = Colors.SECONDARY_BUTTON_HOVERED)
-        val GHOST = ButtonVariant(color = GhostButtonColors, hoverColor = Colors.GHOST_BUTTON_HOVERED)
-    }
-}
 
 @Composable
 @CampgroundComponent(description = "A custom button components with multiple variations and sizes")
@@ -83,16 +46,14 @@ fun BaseButton(
     @CampgroundProp(description = "Control the button sizes.")
     size: InputSizes = InputSizes.DEFAULT,
     @CampgroundProp(description = "Set the button colours.")
-    colors: ButtonColors = DefaultButtonColors,
-    @CampgroundProp(description = "Set the hover colour for the button.")
-    hoverColor: Color = Colors.DEFAULT_BUTTON_HOVERED,
+    colors: ButtonColor,
     @CampgroundProp()
     modifier: Modifier = Modifier,
     @CampgroundProp(description = "Have custom input feedback.")
     feedback: HapticFeedbackType? = HapticFeedbackType.Confirm,
     icon: IconComposable,
     @CampgroundProp(description = "Add any content slot.")
-    content: (@Composable () -> Unit)?
+    content: TextComposable?
 ) {
 
 
@@ -110,9 +71,9 @@ fun BaseButton(
     val targetContainerColor by remember {
         derivedStateOf {
             when {
-                isPressed -> hoverColor // Use base color when pressed
-                isHovered || isPressed -> hoverColor
-                else -> colors.containerColor
+                isPressed -> colors.hoveredBackground // Use base color when pressed
+                isHovered || isPressed -> colors.hoveredBackground
+                else -> colors.background
             }
         }
     }
@@ -131,15 +92,13 @@ fun BaseButton(
 
     val containerColor by remember {
         derivedStateOf {
-            return@derivedStateOf when (colors.containerColor == Color.Transparent) {
+            return@derivedStateOf when (colors.background == Color.Transparent) {
                 true -> targetContainerColor
                 false -> containerColorAnimated
             }
         }
     }
-    CompositionLocalProvider(
-        LocalContentColor provides colors.contentColor,
-    ) {
+
         Box(
             modifier = modifier.scale(buttonScaleAnimated).clip(RoundedInputShape).background(containerColor)
                 .clickable(
@@ -154,12 +113,11 @@ fun BaseButton(
             propagateMinConstraints = true,
         ) {
             Row(Modifier.padding(paddingValue), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                icon(colors.contentColor, BUTTON_ICON_SIZE.dp)
+                icon(colors.foreground, BUTTON_ICON_SIZE.dp)
 
-                if (content != null) content()
+                if (content != null) content(colors.foreground)
             }
         }
-    }
 }
 
 @Composable
@@ -170,20 +128,21 @@ fun Button(
     size: InputSizes = InputSizes.DEFAULT,
     modifier: Modifier = Modifier,
     icon: IconComposable = { _, _ -> },
-    content: (@Composable () -> Unit)?,
+    content: TextComposable?,
 ) {
+    val theme = LocalCampgroundTheme.current.button
+
     val colors = when(variant) {
-        ButtonVariants.DEFAULT -> ButtonVariant.DEFAULT
-        ButtonVariants.PRIMARY -> ButtonVariant.PRIMARY
-        ButtonVariants.SECONDARY -> ButtonVariant.SECONDARY
-        ButtonVariants.GHOST -> ButtonVariant.GHOST
-        else -> ButtonVariant.DEFAULT
+        ButtonVariants.DEFAULT -> theme.default
+        ButtonVariants.PRIMARY -> theme.primary
+        ButtonVariants.SECONDARY -> theme.secondary
+        ButtonVariants.GHOST -> theme.ghost
+        else -> theme.ghost
     }
 
     BaseButton(
         onClick = onClick,
-        colors = colors.color,
-        hoverColor = colors.hoverColor,
+        colors = colors,
         size = size,
         modifier = modifier,
         icon = icon,
@@ -202,6 +161,6 @@ fun Button(
     icon: IconComposable = { _, _ -> }
 ) {
     Button(onClick, variant, size, modifier, icon = icon) {
-        Text(text, fontWeight = FontWeight.SemiBold, letterSpacing = (-0.4).sp)
+        Text(text, fontWeight = FontWeight.SemiBold, letterSpacing = (-0.4).sp, color = it)
     }
 }

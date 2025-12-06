@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,90 +27,105 @@ import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
 import dev.thecampground.ui.Colors
 import dev.thecampground.ui.InputSizes
+import dev.thecampground.ui.LocalCampgroundTheme
 import dev.thecampground.ui.RoundedInputShapePill
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun Header(hamburgerVisible: Boolean = false, hamburgerOnClick: () -> Unit = {}) {
+    val theme = LocalCampgroundTheme.current
+
     Box(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.background(Colors.BG_SECONDARY)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (hamburgerVisible) {
-                    Button(onClick = hamburgerOnClick, variant = ButtonVariants.GHOST, size = InputSizes.ICON) {
-                        Icon(
-                            painterResource(Res.drawable.hamburger),
-                            contentDescription = "Hamburger",
-                            modifier = Modifier.size(26.dp),
-                            tint = Colors.BG_DARK
-                        )
-                    }
-                }
-                Icon(
-                    painterResource(Res.drawable.campground),
-                    contentDescription = "Campground Logo",
-                    modifier = Modifier.size(26.dp),
-                    tint = Colors.BG_DARK
-                )
-                BoxWithConstraints {
-                    if (maxWidth > 800.dp) {
-                        Text(
-                            "campground/compose-ui",
-                            fontSize = 22.sp,
-                            letterSpacing = (-.4).sp,
-                            fontWeight = FontWeight.W700
-                        )
-                    }
-                }
-            }
-
-
-
-            Row() {
-                Button(
-                    onClick = {},
-                    variant = ButtonVariants.GHOST,
-                    size = InputSizes.ICON
+            Row(
+                modifier = Modifier.background(theme.alternative)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    if (hamburgerVisible) {
+                        Button(
+                            onClick = hamburgerOnClick,
+                            variant = ButtonVariants.GHOST,
+                            size = InputSizes.ICON
+                        ) {
+                            Icon(
+                                painterResource(Res.drawable.hamburger),
+                                contentDescription = "Hamburger",
+                                modifier = Modifier.size(26.dp),
+                                tint = theme.text.default
+                            )
+                        }
+                    }
                     Icon(
-                        painterResource(Res.drawable.github_logo),
-                        contentDescription = "Github Logo",
-                        tint = Colors.BG_DARK,
-                        modifier = Modifier.size(26.dp)
+                        painterResource(Res.drawable.campground),
+                        contentDescription = "Campground Logo",
+                        modifier = Modifier.size(26.dp),
+                        tint = theme.text.default
                     )
+                    BoxWithConstraints {
+                        if (maxWidth > 800.dp) {
+                            Text(
+                                "campground/compose-ui",
+                                fontSize = 22.sp,
+                                letterSpacing = (-.4).sp,
+                                fontWeight = FontWeight.W700,
+                                color = theme.text.default,
+                            )
+                        }
+                    }
                 }
 
+
+
+                Row() {
+                    Button(
+                        onClick = {},
+                        variant = ButtonVariants.GHOST,
+                        size = InputSizes.ICON
+                    ) {
+                        Icon(
+                            painterResource(Res.drawable.github_logo),
+                            contentDescription = "Github Logo",
+                            tint = theme.inverse,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+
+                }
+            }
+            Row(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    "Home",
+                    fontSize = 14.sp,
+                    letterSpacing = (-0.4).sp,
+                    modifier = Modifier.clip(RoundedInputShapePill)
+                        .background(theme.button.secondary.background)
+                        .padding(vertical = 1.dp, horizontal = 8.dp),
+                    color = theme.text.secondary,
+                )
+                Text(
+                    "Docs",
+                    fontSize = 14.sp,
+                    letterSpacing = (-0.4).sp,
+                    modifier = Modifier.padding(vertical = 1.dp, horizontal = 4.dp),
+                    color = theme.text.secondary,
+                )
+                Text(
+                    "Components",
+                    fontSize = 14.sp,
+                    letterSpacing = (-0.4).sp,
+                    modifier = Modifier.padding(vertical = 1.dp, horizontal = 4.dp),
+                    color = theme.text.secondary,
+                )
             }
         }
-        Row(
-            modifier = Modifier.align(Alignment.Center),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                "Home",
-                fontSize = 14.sp,
-                letterSpacing = (-0.4).sp,
-                modifier = Modifier.clip(RoundedInputShapePill)
-                    .background(Colors.SECONDARY_BUTTON)
-                    .padding(vertical = 1.dp, horizontal = 8.dp)
-            )
-            Text(
-                "Docs",
-                fontSize = 14.sp,
-                letterSpacing = (-0.4).sp,
-                modifier = Modifier.padding(vertical = 1.dp, horizontal = 4.dp)
-            )
-            Text(
-                "Components",
-                fontSize = 14.sp,
-                letterSpacing = (-0.4).sp,
-                modifier = Modifier.padding(vertical = 1.dp, horizontal = 4.dp)
-            )
-        }
+    HorizontalDivider(color = theme.inverse.copy(alpha = 0.1f))
     }
-}

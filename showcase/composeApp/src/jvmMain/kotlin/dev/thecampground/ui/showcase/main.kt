@@ -2,6 +2,8 @@ package dev.thecampground.ui.showcase
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import dev.thecampground.ui.CampgroundTheme
+
 //import org.jetbrains.skiko.DefaultConsoleLogger
 //import org.jetbrains.skiko.setupSkikoLoggerFactory
 
@@ -25,7 +27,9 @@ fun main() {
             title = "showcase",
         ) {
 
-            App()
+            CampgroundTheme(useDarkTheme = true) {
+                App()
+            }
         }
     }
 }

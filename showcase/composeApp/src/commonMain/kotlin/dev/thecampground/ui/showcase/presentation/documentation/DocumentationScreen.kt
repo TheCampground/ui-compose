@@ -28,6 +28,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,9 +44,11 @@ import camgroundui.showcase.composeapp.generated.resources.compass
 import camgroundui.showcase.composeapp.generated.resources.paintroller
 import camgroundui.showcase.composeapp.generated.resources.sticky_note
 import dev.thecampground.showcase.generated.CampgroundComponents
+import dev.thecampground.ui.BaseCampgroundTheme
 import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
 import dev.thecampground.ui.Colors
+import dev.thecampground.ui.LocalCampgroundTheme
 import dev.thecampground.ui.showcase.presentation.documentation.components.ComponentDetailsScreen
 import dev.thecampground.ui.showcase.presentation.root.Header
 import org.jetbrains.compose.resources.painterResource
@@ -56,89 +59,97 @@ class DocumentationScreen : Screen {
     override fun Content() {
         // Header
         val navigationMenuOpen = remember { mutableStateOf(false) }
+        val theme = LocalCampgroundTheme.current
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(theme.background)
+        ) {
+            val boxWidth = maxWidth
+            Column {
+                Header(hamburgerVisible = boxWidth < 800.dp, hamburgerOnClick = {
+                    navigationMenuOpen.value = true
+                })
+                Navigator(IntroductionScreen()) { navigator ->
+                    Box {
 
-        Navigator(IntroductionScreen()) { navigator ->
-            BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Colors.BG_ALT)
-            ) {
-                val boxWidth = maxWidth
 
-                Row(
-                    modifier = Modifier.fillMaxWidth().blur(0.dp)
-                ) {
-                    AnimatedVisibility(
-                        boxWidth >= 800.dp,
-                        enter = fadeIn() + slideInHorizontally() + expandHorizontally(),
-                        exit = fadeOut() + slideOutHorizontally() + shrinkHorizontally()
-                    ) {
-                        // Desktop / wide layout
-                        NavigationMenu(navigator, onClick = {})
-                    }
-
-                    Column {
-                        Header(hamburgerVisible = boxWidth < 800.dp, hamburgerOnClick = {
-                            navigationMenuOpen.value = true
-                        })
-
-                        Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
-                            FadeTransition(navigator = navigator) { screen ->
-                                screen.Content()
-                            }
-                        }
-                    }
-
-                }
-
-                // Floating navigation overlay for small screens
-                if (boxWidth < 800.dp) {
-                    AnimatedVisibility(
-                        navigationMenuOpen.value,
-                        enter = fadeIn() + slideInHorizontally(),
-                        exit = fadeOut() + slideOutHorizontally()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                // This transparent clickable box captures outside clicks
-                                .clickable(
-                                    // Indication = null prevents ripple effect
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                    navigationMenuOpen.value = false
-
-                                }
+                        Row(
+                            modifier = Modifier.fillMaxWidth().blur(0.dp)
                         ) {
-                            // Your actual navigation menu
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopStart) // example: right side drawer
-                                    .width(300.dp)
-                                    .fillMaxHeight()
-                                    .background(Colors.BG_ALT)
-                                    // Prevent clicks inside the menu from closing it
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    ) { /* consume click only */ }
+                            AnimatedVisibility(
+                                boxWidth >= 800.dp,
+                                enter = fadeIn() + slideInHorizontally() + expandHorizontally(),
+                                exit = fadeOut() + slideOutHorizontally() + shrinkHorizontally()
+                            ) {
+                                // Desktop / wide layout
+                                NavigationMenu(navigator, theme, onClick = {})
+                            }
+
+                            Column {
+                                Box(
+                                    contentAlignment = Alignment.TopCenter,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    FadeTransition(navigator = navigator) { screen ->
+                                        screen.Content()
+                                    }
+                                }
+                            }
+
+                        }
+
+                        // Floating navigation overlay for small screens
+                        if (boxWidth < 800.dp) {
+                            androidx.compose.animation.AnimatedVisibility(
+                                navigationMenuOpen.value,
+                                enter = fadeIn() + slideInHorizontally(),
+                                exit = fadeOut() + slideOutHorizontally()
                             ) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .background(Colors.BG_DARK.copy(alpha = 0.0f))
-                                ) {
-
-                                    NavigationMenu(
-                                        navigator,
-                                        onClick = {
+                                        // This transparent clickable box captures outside clicks
+                                        .clickable(
+                                            // Indication = null prevents ripple effect
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
                                             navigationMenuOpen.value = false
-                                        },
+
+                                        }
+                                ) {
+                                    // Your actual navigation menu
+                                    Box(
                                         modifier = Modifier
-                                            .align(Alignment.Center)
-                                            .background(Colors.BG_ALT)
-                                    )
+                                            .align(Alignment.TopStart) // example: right side drawer
+                                            .width(300.dp)
+                                            .fillMaxHeight()
+                                            .background(theme.alternative)
+                                            // Prevent clicks inside the menu from closing it
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) { /* consume click only */ }
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(Colors.BG_DARK.copy(alpha = 0.0f))
+                                        ) {
+
+                                            NavigationMenu(
+                                                navigator,
+                                                theme,
+                                                onClick = {
+                                                    navigationMenuOpen.value = false
+                                                },
+                                                modifier = Modifier
+                                                    .align(Alignment.Center)
+                                                    .background(theme.alternative)
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -149,138 +160,142 @@ class DocumentationScreen : Screen {
     }
 
     @Composable
-    private fun NavigationMenu(navigator: Navigator, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    private fun NavigationMenu(navigator: Navigator, theme: BaseCampgroundTheme, onClick: () -> Unit, modifier: Modifier = Modifier) {
         val componentDefinitions = CampgroundComponents.components
         val currentScreen = navigator.lastItem
 
-        Column(
-            modifier = Modifier.background(Colors.BG).fillMaxHeight().width(300.dp)
-                .padding(18.dp)
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(18.dp), modifier = modifier) {
-                Column {
-                    NavigationMenuSubTitle("DOCS")
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        if (currentScreen is IntroductionScreen) {
-                            Button(
-                                onClick = {
-                                    navigator.push(IntroductionScreen())
-                                    onClick()
-                                },
-                                variant = ButtonVariants.SECONDARY,
-                                text = "Introduction",
-                                modifier = Modifier.fillMaxWidth()
-                            ) { tint, size ->
-                                Icon(
-                                    painterResource(Res.drawable.sticky_note),
-                                    contentDescription = "Sticky Note",
-                                    modifier = Modifier.size(size),
-                                    tint = tint
-                                )
+        Row(modifier = Modifier.fillMaxHeight().width(300.dp).background(theme.alternative)) {
+            Column(
+                modifier = modifier.fillMaxHeight().width(300.dp)
+                    .padding(18.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(18.dp), modifier = modifier) {
+                    Column {
+                        NavigationMenuSubTitle("DOCS", theme)
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            if (currentScreen is IntroductionScreen) {
+                                Button(
+                                    onClick = {
+                                        navigator.push(IntroductionScreen())
+                                        onClick()
+                                    },
+                                    variant = ButtonVariants.SECONDARY,
+                                    text = "Introduction",
+                                    modifier = Modifier.fillMaxWidth()
+                                ) { tint, size ->
+                                    Icon(
+                                        painterResource(Res.drawable.sticky_note),
+                                        contentDescription = "Sticky Note",
+                                        modifier = Modifier.size(size),
+                                        tint = tint
+                                    )
+                                }
+                            } else {
+                                Button(
+                                    onClick = {
+                                        navigator.push(IntroductionScreen())
+                                        onClick()
+                                    },
+                                    variant = ButtonVariants.GHOST,
+                                    text = "Introduction",
+                                    modifier = Modifier.fillMaxWidth()
+                                ) { tint, size ->
+                                    Icon(
+                                        painterResource(Res.drawable.sticky_note),
+                                        contentDescription = "Sticky Note",
+                                        modifier = Modifier.size(size),
+                                        tint = tint
+                                    )
+                                }
                             }
-                        } else {
-                            Button(
-                                onClick = {
-                                    navigator.push(IntroductionScreen())
-                                    onClick()
-                                },
-                                variant = ButtonVariants.GHOST,
-                                text = "Introduction",
-                                modifier = Modifier.fillMaxWidth()
-                            ) { tint, size ->
-                                Icon(
-                                    painterResource(Res.drawable.sticky_note),
-                                    contentDescription = "Sticky Note",
-                                    modifier = Modifier.size(size),
-                                    tint = tint
-                                )
-                            }
-                        }
 
-                        if (currentScreen is GettingStartedScreen) {
-                            Button(
-                                onClick = {
-                                    navigator.push(IntroductionScreen())
-                                    onClick()
-                                },
-                                variant = ButtonVariants.SECONDARY,
-                                text = "Getting Started",
-                                modifier = Modifier.fillMaxWidth()
-                            ) { tint, size ->
-                                Icon(
-                                    painterResource(Res.drawable.compass),
-                                    contentDescription = "Compass",
-                                    modifier = Modifier.size(size),
-                                    tint = tint
-                                )
+                            if (currentScreen is GettingStartedScreen) {
+                                Button(
+                                    onClick = {
+                                        navigator.push(IntroductionScreen())
+                                        onClick()
+                                    },
+                                    variant = ButtonVariants.SECONDARY,
+                                    text = "Getting Started",
+                                    modifier = Modifier.fillMaxWidth()
+                                ) { tint, size ->
+                                    Icon(
+                                        painterResource(Res.drawable.compass),
+                                        contentDescription = "Compass",
+                                        modifier = Modifier.size(size),
+                                        tint = tint
+                                    )
+                                }
+                            } else {
+                                Button(
+                                    onClick = {
+                                        navigator.push(GettingStartedScreen())
+                                        onClick()
+                                    },
+                                    variant = ButtonVariants.GHOST,
+                                    text = "Getting Started",
+                                    modifier = Modifier.fillMaxWidth()
+                                ) { tint, size ->
+                                    Icon(
+                                        painterResource(Res.drawable.compass),
+                                        contentDescription = "Compass",
+                                        modifier = Modifier.size(size),
+                                        tint = tint
+                                    )
+                                }
                             }
-                        } else {
-                            Button(
-                                onClick = {
-                                    navigator.push(GettingStartedScreen())
-                                    onClick()
-                                },
-                                variant = ButtonVariants.GHOST,
-                                text = "Getting Started",
-                                modifier = Modifier.fillMaxWidth()
-                            ) { tint, size ->
-                                Icon(
-                                    painterResource(Res.drawable.compass),
-                                    contentDescription = "Compass",
-                                    modifier = Modifier.size(size),
-                                    tint = tint
-                                )
-                            }
-                        }
-                        if (currentScreen is StylingScreen) {
-                            Button(
-                                onClick = {
-                                    navigator.push(StylingScreen())
-                                    onClick()
-                                },
-                                variant = ButtonVariants.SECONDARY,
-                                text = "Styling",
-                                modifier = Modifier.fillMaxWidth()
-                            ) { tint, size ->
-                                Icon(
-                                    painterResource(Res.drawable.paintroller),
-                                    contentDescription = "Paint roller",
-                                    modifier = Modifier.size(size),
-                                    tint = tint
-                                )
-                            }
-                        } else {
-                            Button(
-                                onClick = {
-                                    navigator.push(StylingScreen())
-                                    onClick()
-                                },
-                                variant = ButtonVariants.GHOST,
-                                text = "Styling",
-                                modifier = Modifier.fillMaxWidth()
-                            ) { tint, size ->
-                                Icon(
-                                    painterResource(Res.drawable.paintroller),
-                                    contentDescription = "Paint roller",
-                                    modifier = Modifier.size(size),
-                                    tint = tint
-                                )
+                            if (currentScreen is StylingScreen) {
+                                Button(
+                                    onClick = {
+                                        navigator.push(StylingScreen())
+                                        onClick()
+                                    },
+                                    variant = ButtonVariants.SECONDARY,
+                                    text = "Styling",
+                                    modifier = Modifier.fillMaxWidth()
+                                ) { tint, size ->
+                                    Icon(
+                                        painterResource(Res.drawable.paintroller),
+                                        contentDescription = "Paint roller",
+                                        modifier = Modifier.size(size),
+                                        tint = tint
+                                    )
+                                }
+                            } else {
+                                Button(
+                                    onClick = {
+                                        navigator.push(StylingScreen())
+                                        onClick()
+                                    },
+                                    variant = ButtonVariants.GHOST,
+                                    text = "Styling",
+                                    modifier = Modifier.fillMaxWidth()
+                                ) { tint, size ->
+                                    Icon(
+                                        painterResource(Res.drawable.paintroller),
+                                        contentDescription = "Paint roller",
+                                        modifier = Modifier.size(size),
+                                        tint = tint
+                                    )
+                                }
                             }
                         }
                     }
-                }
 
-                val verticalScrollComponents = rememberScrollState()
-                Column {
-                    NavigationMenuSubTitle("COMPONENTS")
+                    val verticalScrollComponents = rememberScrollState()
+                    Column {
+                        NavigationMenuSubTitle("COMPONENTS", theme)
 
-                    Column(modifier = Modifier.verticalScroll(verticalScrollComponents)) {
-                        for (compName in componentDefinitions) {
-                            NavigationComponentItem(navigator, onClick, compName.key)
+                        Column(modifier = Modifier.verticalScroll(verticalScrollComponents)) {
+                            for (compName in componentDefinitions) {
+                                NavigationComponentItem(navigator, onClick, compName.key)
+                            }
                         }
                     }
                 }
             }
+
+            VerticalDivider(color = theme.inverse.copy(alpha = 0.1f))
         }
     }
 
@@ -296,7 +311,7 @@ class DocumentationScreen : Screen {
                 onClick()
             }
             ) {
-                Text(text, fontSize = 14.sp)
+                Text(text, fontSize = 14.sp, color = it)
             }
         } else {
             Button(variant = ButtonVariants.GHOST, modifier = Modifier.fillMaxWidth(), onClick = {
@@ -306,17 +321,17 @@ class DocumentationScreen : Screen {
                 onClick()
             }
             ) {
-                Text(text, fontSize = 14.sp)
+                Text(text, fontSize = 14.sp, color = it)
             }
         }
 
     }
 
     @Composable
-    private fun NavigationMenuSubTitle(text: String) {
+    private fun NavigationMenuSubTitle(text: String, theme: BaseCampgroundTheme) {
         Text(
             text,
-            color = Colors.BRAND_FOREGROUND.copy(alpha = 0.7f),
+            color = theme.text.secondary,
             letterSpacing = (-0.4).sp,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
@@ -328,18 +343,18 @@ class DocumentationScreen : Screen {
 
 
 @Composable
-fun DocumentationRoot(name: String = "Not provided", description: String = "Not provided", content: @Composable () -> Unit) {
+fun DocumentationRoot(name: String = "Not provided", description: String = "Not provided", theme: BaseCampgroundTheme, content: @Composable () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp), modifier = Modifier.padding(14.dp)) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(name, fontSize = 32.sp, fontWeight = FontWeight.W700)
+            Text(name, fontSize = 32.sp, fontWeight = FontWeight.W700, color = theme.text.default)
             Text(
                 description,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.W400,
                 letterSpacing = (-0.4).sp,
-                color = Colors.TEXT_ALT
+                color = theme.text.secondary,
             )
         }
 

@@ -12,12 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import dev.thecampground.ui.Colors
+import dev.thecampground.ui.LocalCampgroundTheme
 import dev.thecampground.ui.showcase.presentation.defaultLink
 
 class IntroductionScreen : Screen {
     @Composable
     override fun Content() {
-        DocumentationRoot("Introduction", "A collection of themed UI components.") {
+        val theme = LocalCampgroundTheme.current
+        DocumentationRoot("Introduction", "A collection of themed UI components.", theme) {
             Text(
                 buildAnnotatedString {
                     append("campground/compose-ui is a collection of themed components for ")
@@ -27,7 +29,7 @@ class IntroductionScreen : Screen {
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W400,
                 letterSpacing = (-0.4).sp,
-                color = Colors.BG_DARK
+                color = theme.text.secondary
             )
         }
     }

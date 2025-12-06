@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dev.thecampground.ui.CampgroundTheme
 import dev.thecampground.ui.Colors
+import dev.thecampground.ui.LocalCampgroundTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,10 +21,13 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            Box(modifier = Modifier.background(Colors.BG_SECONDARY).statusBarsPadding()) {
-                App()
-            }
+            CampgroundTheme {
+                val theme = LocalCampgroundTheme.current
 
+                Box(modifier = Modifier.background(theme.alternative).statusBarsPadding()) {
+                    App()
+                }
+            }
         }
     }
 }

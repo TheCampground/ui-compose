@@ -14,7 +14,6 @@ import dev.thecampground.ui.AlertVariants
 import dev.thecampground.ui.BaseButton
 import dev.thecampground.ui.Button
 import dev.thecampground.ui.Colors
-import dev.thecampground.ui.DefaultButtonColors
 import dev.thecampground.ui.InputSizes
 import dev.thecampground.ui.annotation.CampgroundExample
 
@@ -22,17 +21,7 @@ import dev.thecampground.ui.annotation.CampgroundExample
 @CampgroundExample
 @Suppress("unused")
 internal fun BaseButton() {
-    BaseButton(
-        onClick = {},
-        size = InputSizes.DEFAULT,
-        colors = DefaultButtonColors,
-        hoverColor = Colors.DEFAULT_BUTTON_HOVERED,
-        modifier = Modifier.alpha(1f),
-        feedback = HapticFeedbackType.LongPress,
-        icon = { _, _ -> },
-    ) {
-        Text("My Button Contents", fontWeight = FontWeight.Bold)
-    }
+
 }
 
 @Composable
