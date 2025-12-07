@@ -9,14 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ShaderBrush
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.RuntimeEffect
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-
-import kotlin.emptyArray
 
 @Composable
 actual fun Noise(intensity: Float, animated: Boolean, bg: Color) {
@@ -26,8 +22,7 @@ actual fun Noise(intensity: Float, animated: Boolean, bg: Color) {
     val time = remember { mutableStateOf(20f) }
     val size = remember { mutableStateOf(Size.Zero) }
     // trigger animation
-    val uniformBuffer =
-        remember { ByteBuffer.allocate(4 * (2 + 1 + 1 + 3 + 1)).order(ByteOrder.LITTLE_ENDIAN) }
+    val uniformBuffer = ByteArray(4 * (2 + 1 + 1 + 3 + 1))
     if (animated) {
         LaunchedEffect(Unit) {
             while (animated) {
@@ -39,22 +34,20 @@ actual fun Noise(intensity: Float, animated: Boolean, bg: Color) {
     }
 
     LaunchedEffect(time.value, size.value) {
-        uniformBuffer.clear()
-        uniformBuffer.putFloat(size.value.width)
-        uniformBuffer.putFloat(size.value.height)
-        uniformBuffer.putFloat(intensity)
-        uniformBuffer.putFloat(time.value)
-        uniformBuffer.putFloat(bg.red)
-        uniformBuffer.putFloat(bg.green)
-        uniformBuffer.putFloat(bg.blue)
-        uniformBuffer.putFloat(1f)
-        uniformBuffer.flip()
+        uniformBuffer.putFloatLE(0, size.value.width)
+        uniformBuffer.putFloatLE(4, size.value.height)
+        uniformBuffer.putFloatLE(8, intensity)
+        uniformBuffer.putFloatLE(12, time.value)
+        uniformBuffer.putFloatLE(16, bg.red)
+        uniformBuffer.putFloatLE(20, bg.green)
+        uniformBuffer.putFloatLE(24, bg.blue)
+        uniformBuffer.putFloatLE(28, 1f)
     }
 
     val noiseShader = remember(uniformBuffer, time.value) {
 
         noiseEffect.makeShader(
-            uniforms = Data.makeFromBytes(uniformBuffer.array()),
+            uniforms = Data.makeFromBytes(uniformBuffer),
             children = emptyArray(),  // no child shaders
             localMatrix = null,
         )
