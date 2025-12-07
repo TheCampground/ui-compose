@@ -5,7 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-
+import dev.thecampground.ui.annotation.CampgroundType
 
 @Composable
 expect fun isDarkTheme(): Boolean
@@ -187,12 +187,14 @@ data class BaseCampgroundTheme(
 
 
 @Stable
+@CampgroundType
 class TextColors(
     val default: Color,
     val secondary: Color,
     val alternative: Color = secondary,
 )
 @Stable
+@CampgroundType
 class ButtonColors(
     val default: ButtonColor = ButtonColor(),
     val primary: ButtonColor = ButtonColor(),
@@ -204,6 +206,7 @@ class ButtonColors(
 )
 
 @Stable
+@CampgroundType
 class AlertColors(
     val default: AlertColor = AlertColor(),
     val success: AlertColor = AlertColor(),
@@ -214,6 +217,7 @@ class AlertColors(
 
 
 @Stable
+@CampgroundType
 class AlertColor(
     val background: Color = Color.Black,
     val foreground: Color = Color.White,
@@ -221,6 +225,7 @@ class AlertColor(
 )
 
 @Stable
+@CampgroundType
 class ButtonColor(
     val background: Color = Color.Black,
     val foreground: Color = Color.White,
