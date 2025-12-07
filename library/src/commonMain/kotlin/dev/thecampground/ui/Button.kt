@@ -11,11 +11,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.thecampground.ui.annotation.CampgroundComponent
 import dev.thecampground.ui.annotation.CampgroundProp
-import dev.thecampground.ui.annotation.CampgroundType
 
 
 private const val BUTTON_ICON_SIZE = 18
@@ -46,7 +42,7 @@ fun BaseButton(
     @CampgroundProp(description = "Control the button sizes.")
     size: InputSizes = InputSizes.DEFAULT,
     @CampgroundProp(description = "Set the button colours.")
-    colors: ButtonColor,
+    color: ButtonColor,
     @CampgroundProp()
     modifier: Modifier = Modifier,
     @CampgroundProp(description = "Have custom input feedback.")
@@ -71,9 +67,9 @@ fun BaseButton(
     val targetContainerColor by remember {
         derivedStateOf {
             when {
-                isPressed -> colors.hoveredBackground // Use base color when pressed
-                isHovered || isPressed -> colors.hoveredBackground
-                else -> colors.background
+                isPressed -> color.hoveredBackground // Use base color when pressed
+                isHovered || isPressed -> color.hoveredBackground
+                else -> color.background
             }
         }
     }
@@ -92,7 +88,7 @@ fun BaseButton(
 
     val containerColor by remember {
         derivedStateOf {
-            return@derivedStateOf when (colors.background == Color.Transparent) {
+            return@derivedStateOf when (color.background == Color.Transparent) {
                 true -> targetContainerColor
                 false -> containerColorAnimated
             }
@@ -113,9 +109,9 @@ fun BaseButton(
             propagateMinConstraints = true,
         ) {
             Row(Modifier.padding(paddingValue), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                icon(colors.foreground, BUTTON_ICON_SIZE.dp)
+                icon(color.foreground, BUTTON_ICON_SIZE.dp)
 
-                if (content != null) content(colors.foreground)
+                if (content != null) content(color.foreground)
             }
         }
 }
@@ -142,7 +138,7 @@ fun Button(
 
     BaseButton(
         onClick = onClick,
-        colors = colors,
+        color = colors,
         size = size,
         modifier = modifier,
         icon = icon,
