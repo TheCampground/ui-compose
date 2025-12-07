@@ -1,6 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import com.android.build.api.dsl.androidLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -57,10 +57,17 @@ kotlin {
     }
     
     sourceSets {
+        val commonMain by getting
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
         }
+//        // Intermediate shared source set
+//        val jvmIosWasmMain by creating {
+//            dependsOn(commonMain)
+//        }
+
         commonMain {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
@@ -77,10 +84,20 @@ kotlin {
 
             }
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
         }
+        iosMain {
+//            dependsOn(jvmIosWasmMain)
+        }
+        wasmJsMain {
+//            dependsOn(jvmIosWasmMain)
+        }
+
         jvmMain {
+//            dependsOn(jvmIosWasmMain)
             kotlin.srcDir("src/main/kotlin")
             resources.srcDir("src/main/resources")
             dependencies {

@@ -1,17 +1,9 @@
 package dev.thecampground.ui
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 
@@ -41,7 +33,7 @@ data class BaseCampgroundTheme(
     val secondary: Color = Color.hsl(35f, .58f, .94f),
     val alternative: Color = Color.hsl(34f, 0.25f, .83f),
     val inverse: Color = Color.hsl(0f, 0f, .08f),
-
+    val grain: Color = Color.hsl(0f, 0f, .1f),
     val text: TextColors = TextColors(
         default = inverse,
         secondary = Color.hsl(0f, 0f, 0.32f)

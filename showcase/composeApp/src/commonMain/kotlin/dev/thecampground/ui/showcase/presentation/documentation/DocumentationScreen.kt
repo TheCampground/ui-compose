@@ -1,8 +1,5 @@
 package dev.thecampground.ui.showcase.presentation.documentation
 
-import androidx.compose.runtime.Composable
-import cafe.adriel.voyager.core.screen.Screen
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -29,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +35,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.FadeTransition
 import camgroundui.showcase.composeapp.generated.resources.Res
@@ -52,6 +51,7 @@ import dev.thecampground.ui.LocalCampgroundTheme
 import dev.thecampground.ui.showcase.presentation.documentation.components.ComponentDetailsScreen
 import dev.thecampground.ui.showcase.presentation.root.Header
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 class DocumentationScreen : Screen {
     @Composable
@@ -63,7 +63,6 @@ class DocumentationScreen : Screen {
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .background(theme.background)
         ) {
             val boxWidth = maxWidth
             Column {
@@ -101,7 +100,7 @@ class DocumentationScreen : Screen {
 
                         // Floating navigation overlay for small screens
                         if (boxWidth < 800.dp) {
-                            androidx.compose.animation.AnimatedVisibility(
+                            AnimatedVisibility(
                                 navigationMenuOpen.value,
                                 enter = fadeIn() + slideInHorizontally(),
                                 exit = fadeOut() + slideOutHorizontally()
