@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,6 +49,8 @@ import dev.thecampground.ui.Button
 import dev.thecampground.ui.ButtonVariants
 import dev.thecampground.ui.Colors
 import dev.thecampground.ui.LocalCampgroundTheme
+import dev.thecampground.ui.showcase.internal.currentScreenAsState
+import dev.thecampground.ui.showcase.internal.safePush
 import dev.thecampground.ui.showcase.presentation.documentation.components.ComponentDetailsScreen
 import dev.thecampground.ui.showcase.presentation.root.Header
 import org.jetbrains.compose.resources.painterResource
@@ -70,6 +73,7 @@ class DocumentationScreen : Screen {
                     navigationMenuOpen.value = true
                 })
                 Navigator(IntroductionScreen()) { navigator ->
+
                     Box {
 
 
@@ -159,10 +163,14 @@ class DocumentationScreen : Screen {
     }
 
     @Composable
-    private fun NavigationMenu(navigator: Navigator, theme: BaseCampgroundTheme, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    private fun NavigationMenu(
+        navigator: Navigator,
+        theme: BaseCampgroundTheme,
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier
+    ) {
         val componentDefinitions = CampgroundComponents.components
-        val currentScreen = navigator.lastItem
-
+        val currentScreen by navigator.currentScreenAsState()
         Row(modifier = Modifier.fillMaxHeight().width(300.dp).background(theme.alternative)) {
             Column(
                 modifier = modifier.fillMaxHeight().width(300.dp)
@@ -172,111 +180,56 @@ class DocumentationScreen : Screen {
                     Column {
                         NavigationMenuSubTitle("DOCS", theme)
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            if (currentScreen is IntroductionScreen) {
-                                Button(
-                                    onClick = {
-                                        navigator.push(IntroductionScreen())
-                                        onClick()
-                                    },
-                                    variant = ButtonVariants.SECONDARY,
-                                    text = "Introduction",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { tint, size ->
-                                    Icon(
-                                        painterResource(Res.drawable.sticky_note),
-                                        contentDescription = "Sticky Note",
-                                        modifier = Modifier.size(size),
-                                        tint = tint
-                                    )
-                                }
-                            } else {
-                                Button(
-                                    onClick = {
-                                        navigator.push(IntroductionScreen())
-                                        onClick()
-                                    },
-                                    variant = ButtonVariants.GHOST,
-                                    text = "Introduction",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { tint, size ->
-                                    Icon(
-                                        painterResource(Res.drawable.sticky_note),
-                                        contentDescription = "Sticky Note",
-                                        modifier = Modifier.size(size),
-                                        tint = tint
-                                    )
-                                }
+                            Button(
+                                enabled = currentScreen !is IntroductionScreen,
+                                onClick = {
+                                    navigator.safePush(IntroductionScreen())
+                                    onClick()
+                                },
+                                variant = ButtonVariants.GHOST,
+                                text = "Introduction",
+                                modifier = Modifier.fillMaxWidth()
+                            ) { tint, size ->
+                                Icon(
+                                    painterResource(Res.drawable.sticky_note),
+                                    contentDescription = "Sticky Note",
+                                    modifier = Modifier.size(size),
+                                    tint = tint
+                                )
                             }
-
-                            if (currentScreen is GettingStartedScreen) {
-                                Button(
-                                    onClick = {
-                                        navigator.push(IntroductionScreen())
-                                        onClick()
-                                    },
-                                    variant = ButtonVariants.SECONDARY,
-                                    text = "Getting Started",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { tint, size ->
-                                    Icon(
-                                        painterResource(Res.drawable.compass),
-                                        contentDescription = "Compass",
-                                        modifier = Modifier.size(size),
-                                        tint = tint
-                                    )
-                                }
-                            } else {
-                                Button(
-                                    onClick = {
-                                        navigator.push(GettingStartedScreen())
-                                        onClick()
-                                    },
-                                    variant = ButtonVariants.GHOST,
-                                    text = "Getting Started",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { tint, size ->
-                                    Icon(
-                                        painterResource(Res.drawable.compass),
-                                        contentDescription = "Compass",
-                                        modifier = Modifier.size(size),
-                                        tint = tint
-                                    )
-                                }
+                            Button(
+                                enabled = currentScreen !is GettingStartedScreen,
+                                onClick = {
+                                    navigator.safePush(GettingStartedScreen())
+                                    onClick()
+                                },
+                                variant = ButtonVariants.GHOST,
+                                text = "Getting Started",
+                                modifier = Modifier.fillMaxWidth()
+                            ) { tint, size ->
+                                Icon(
+                                    painterResource(Res.drawable.compass),
+                                    contentDescription = "Compass",
+                                    modifier = Modifier.size(size),
+                                    tint = tint
+                                )
                             }
-                            if (currentScreen is StylingScreen) {
-                                Button(
-                                    onClick = {
-                                        navigator.push(StylingScreen())
-                                        onClick()
-                                    },
-                                    variant = ButtonVariants.SECONDARY,
-                                    text = "Styling",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { tint, size ->
-                                    Icon(
-                                        painterResource(Res.drawable.paintroller),
-                                        contentDescription = "Paint roller",
-                                        modifier = Modifier.size(size),
-                                        tint = tint
-                                    )
-                                }
-                            } else {
-                                Button(
-                                    onClick = {
-                                        navigator.push(StylingScreen())
-                                        onClick()
-                                    },
-                                    variant = ButtonVariants.GHOST,
-                                    text = "Styling",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { tint, size ->
-                                    Icon(
-                                        painterResource(Res.drawable.paintroller),
-                                        contentDescription = "Paint roller",
-                                        modifier = Modifier.size(size),
-                                        tint = tint
-                                    )
-                                }
+                            Button(
+                                enabled = currentScreen !is StylingScreen,
+                                onClick = {
+                                    navigator.safePush(StylingScreen())
+                                    onClick()
+                                },
+                                variant = ButtonVariants.GHOST,
+                                text = "Styling",
+                                modifier = Modifier.fillMaxWidth()
+                            ) { tint, size ->
+                                Icon(
+                                    painterResource(Res.drawable.paintroller),
+                                    contentDescription = "Paint roller",
+                                    modifier = Modifier.size(size),
+                                    tint = tint
+                                )
                             }
                         }
                     }
@@ -302,9 +255,12 @@ class DocumentationScreen : Screen {
     private fun NavigationComponentItem(navigator: Navigator, onClick: () -> Unit, text: String) {
         val currentScreen = navigator.lastItem
 
-        if (currentScreen is ComponentDetailsScreen && currentScreen.component == text) {
-            Button(variant = ButtonVariants.SECONDARY, modifier = Modifier.fillMaxWidth(), onClick = {
-                navigator.push(
+        Button(
+            enabled = if (currentScreen !is ComponentDetailsScreen) true else (currentScreen.component != text),
+            variant = ButtonVariants.GHOST,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                navigator.safePush(
                     ComponentDetailsScreen(text)
                 )
                 onClick()
@@ -312,17 +268,6 @@ class DocumentationScreen : Screen {
             ) {
                 Text(text, fontSize = 14.sp, color = it)
             }
-        } else {
-            Button(variant = ButtonVariants.GHOST, modifier = Modifier.fillMaxWidth(), onClick = {
-                navigator.push(
-                    ComponentDetailsScreen(text)
-                )
-                onClick()
-            }
-            ) {
-                Text(text, fontSize = 14.sp, color = it)
-            }
-        }
 
     }
 
@@ -340,10 +285,14 @@ class DocumentationScreen : Screen {
 }
 
 
-
 @Composable
-fun DocumentationRoot(name: String = "Not provided", description: String = "Not provided", theme: BaseCampgroundTheme, content: @Composable () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(18.dp), modifier = Modifier.padding(14.dp)) {
+fun DocumentationRoot(
+    name: String = "Not provided",
+    description: String = "Not provided",
+    theme: BaseCampgroundTheme,
+    content: @Composable () -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
