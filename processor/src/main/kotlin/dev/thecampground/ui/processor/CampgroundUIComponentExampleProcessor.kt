@@ -12,13 +12,10 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.validate
-import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
 import java.io.File
 
 class CampgroundUIComponentExampleProcessor(
@@ -30,7 +27,10 @@ class CampgroundUIComponentExampleProcessor(
     private var rawFunctionStrings: List<String>? = null
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("dev.thecampground.ui.annotation.CampgroundUIComponentExample", inDepth = true)
+        val symbols = resolver.getSymbolsWithAnnotation(
+            "dev.thecampground.ui.annotation.CampgroundExample",
+            inDepth = true
+        )
         val invalid = symbols.filter { !it.validate() }.toList()
 
         symbols
@@ -46,7 +46,7 @@ class CampgroundUIComponentExampleProcessor(
     private fun generateExamplesFile() {
         if (collectedExamples.isEmpty()) return
 
-        val pkg = "dev.thecampground.ui.internal"
+        val pkg = "dev.thecampground.ui.showcase.internal"
         val file = codeGenerator.createNewFile(
             Dependencies(
                 aggregating = false,
@@ -56,27 +56,35 @@ class CampgroundUIComponentExampleProcessor(
             "kt"
         )
 
-        val mapExprs = collectedExamples.map { (name, text) ->
-            CodeBlock.of("\n%S to %S\n", name, text.second)
-        }
+//        val mapExprs = collectedExamples.map { (name, text) ->
+//            CodeBlock.of("\n%S to %S\n", name, text.second)
+//        }
 
-        val typeDefinitions = PropertySpec.builder(
-            "exampleDefinitions",
-            Map::class.asClassName().parameterizedBy(
-                STRING,
-                STRING
-            )
-        ).initializer(
-            mapExprs.joinToString(prefix = "mapOf(\n", postfix = "\n)") { "%L" },
-            *mapExprs.toTypedArray()
-        ).build()
+//        val typeDefinitions = PropertySpec.builder(
+//            "exampleDefinitions",
+//            Map::class.asClassName().parameterizedBy(
+//                STRING,
+//                STRING
+//            )
+//        ).initializer(
+//            mapExprs.joinToString(prefix = "mapOf(\n", postfix = "\n)") { "%L" },
+//            *mapExprs.toTypedArray()
+//        ).build()
 
         val objType = TypeSpec.objectBuilder("CampgroundUIExamples")
-            .addProperty(typeDefinitions)
-            .build()
+//            .addProperty(typeDefinitions)
+
+        collectedExamples.forEach { (name, text) ->
+            objType.addProperty(
+                PropertySpec.builder(name, STRING).initializer("%S", text.second).build()
+            )
+        }
+
+
+
 
         val fileSpec = FileSpec.builder(pkg, "CampgroundUIExamples")
-            .addType(objType)
+            .addType(objType.build())
             .build()
 
         file.writer().use { writer ->
@@ -93,6 +101,7 @@ class CampgroundUIComponentExampleProcessor(
             rawFunctionStrings = File(path).readLines()
         }
 
+        println(File(path).readLines()[realStart])
         var openingStatements = 0
         // Worlds simplest function grabber.
         for (i in realStart..<(rawFunctionStrings?.size ?: 0)) {
@@ -106,13 +115,14 @@ class CampgroundUIComponentExampleProcessor(
         }
 
         val sep = str.toString().split("\n").toMutableList()
-
         sep.removeFirst()
+        sep.removeLast()
         sep.removeLast()
         return sep.joinToString("\n")
     }
     private fun getFuncText(func: KSFunctionDeclaration): String {
         val fileLocation = (func.location as FileLocation)
+
         val filePath = fileLocation.filePath
         val startLineNumber = fileLocation.lineNumber
 
