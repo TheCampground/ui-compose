@@ -12,3 +12,7 @@ typealias IconComposable = @Composable (tint: Color, size: Dp) -> Unit
 @CampgroundType
 @Suppress("unused")
 typealias TextComposable = @Composable (tint: Color) -> Unit
+
+@CampgroundType
+@Suppress("unused")
+typealias ActionComposable = @Composable (action: @Composable () -> Unit) -> Unit
