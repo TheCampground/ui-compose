@@ -38,6 +38,7 @@ data class BaseCampgroundTheme(
         default = inverse,
         secondary = Color.hsl(0f, 0f, 0.32f)
     ),
+    val border: Color = Color.hsl(0f, 0f, 0.96f),
     // Brand
     val brand: Color = Color.hsl(31f, .96f, .78f),
 
