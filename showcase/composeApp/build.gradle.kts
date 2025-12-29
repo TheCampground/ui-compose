@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    id("com.google.devtools.ksp") version "2.3.3"
 }
 
 kotlin {
@@ -29,9 +30,11 @@ kotlin {
     jvm()
     
     sourceSets {
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
+        androidMain {
+            dependencies {
+                implementation(compose.preview)
+                implementation(libs.androidx.activity.compose)
+            }
         }
         commonMain {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
@@ -53,17 +56,35 @@ kotlin {
                 implementation(libs.voyager.screenModel)
                 implementation(libs.voyager.transitions)
                 implementation(libs.highlights)
+
+
             }
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
         jvmMain {
+//            kotlin.srcDir("src/commonMain/kotlin")
+//            resources.srcDir("src/main/resources")
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.coroutinesSwing)
+                implementation(project(":processor"))
             }
         }
+    }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", project(":processor"))
+
+
+//    add("kspJvm", project(":processor"))
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
     }
 }
 
