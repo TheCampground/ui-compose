@@ -37,6 +37,8 @@ private const val BUTTON_ICON_SIZE = 18
 @Composable
 @CampgroundComponent(description = "A custom button components with multiple variations and sizes")
 fun BaseButton(
+    @CampgroundProp(description = "Sets if the button should be clickable or not.")
+    enabled: Boolean = true,
     @CampgroundProp(description = "Fires an event when the button is clicked.")
     onClick: () -> Unit,
     @CampgroundProp(description = "Control the button sizes.")
@@ -64,40 +66,36 @@ fun BaseButton(
     val isHovered by interactionSource.collectIsHoveredAsState()
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val targetContainerColor by remember {
-        derivedStateOf {
-            when {
-                isPressed -> color.hoveredBackground // Use base color when pressed
-                isHovered || isPressed -> color.hoveredBackground
-                else -> color.background
-            }
+    val targetContainerColor by derivedStateOf {
+        when {
+            !enabled -> color.disabledBackground
+            isHovered || isPressed -> color.hoveredBackground
+            else -> color.background
         }
     }
 
-    val buttonScale by remember {
-        derivedStateOf {
-            return@derivedStateOf when {
-                isHovered && !isPressed -> 0.98f
-                isPressed -> 0.95f
-                else -> 1f
-            }
+    val buttonScale by derivedStateOf {
+        when {
+            isPressed -> 0.95f
+            isHovered -> 0.98f
+            else -> 1f
         }
     }
+
     val containerColorAnimated by animateColorAsState(targetContainerColor)
     val buttonScaleAnimated by animateFloatAsState(buttonScale)
 
-    val containerColor by remember {
-        derivedStateOf {
-            return@derivedStateOf when (color.background == Color.Transparent) {
-                true -> targetContainerColor
-                false -> containerColorAnimated
-            }
+    val containerColor by derivedStateOf {
+        when (color.background == Color.Transparent) {
+            true -> targetContainerColor
+            false -> containerColorAnimated
         }
     }
 
         Box(
             modifier = modifier.scale(buttonScaleAnimated).clip(RoundedInputShape).background(containerColor)
                 .clickable(
+                    enabled = enabled,
                     interactionSource = interactionSource,
                     indication = null,
                     role = Role.Button
@@ -119,11 +117,18 @@ fun BaseButton(
 @Composable
 @CampgroundComponent(description = "A custom button components with multiple variations and sizes")
 fun Button(
+    @CampgroundProp(description = "Sets if the button should be clickable or not.")
+    enabled: Boolean = true,
+    @CampgroundProp(description = "Fires an event when the button is clicked.")
     onClick: () -> Unit,
+    @CampgroundProp(description = "The variant of the default trigger.")
     variant: ButtonVariants = ButtonVariants.DEFAULT,
+    @CampgroundProp(description = "The size of the default trigger.")
     size: InputSizes = InputSizes.DEFAULT,
     modifier: Modifier = Modifier,
+    @CampgroundProp(description = "A composable function to specify the icon with a set tint, and size.")
     icon: IconComposable = { _, _ -> },
+    @CampgroundProp(description = "Content of the composable.")
     content: TextComposable?,
 ) {
     val theme = LocalCampgroundTheme.current.button
@@ -137,6 +142,7 @@ fun Button(
     }
 
     BaseButton(
+        enabled = enabled,
         onClick = onClick,
         color = colors,
         size = size,
@@ -149,14 +155,22 @@ fun Button(
 @Composable
 @CampgroundComponent(description = "A custom button components with multiple variations and sizes")
 fun Button(
+    enabled: Boolean = true,
     onClick: () -> Unit,
     variant: ButtonVariants = ButtonVariants.DEFAULT,
     size: InputSizes = InputSizes.DEFAULT,
     modifier: Modifier = Modifier,
     text: String = "Campground",
-    icon: IconComposable = { _, _ -> }
+    icon: IconComposable = { _, _ -> },
 ) {
-    Button(onClick, variant, size, modifier, icon = icon) {
+    Button(
+        enabled = enabled,
+        onClick = onClick,
+        variant = variant,
+        size = size,
+        modifier = modifier,
+        icon = icon
+    ) {
         Text(text, fontWeight = FontWeight.SemiBold, letterSpacing = (-0.4).sp, color = it)
     }
 }

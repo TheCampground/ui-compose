@@ -78,7 +78,8 @@ data class BaseCampgroundTheme(
                     ghost = ButtonColor(
                         background = Color.Transparent,
                         foreground = base.inverse,
-                        hoveredBackground = Color.hsl(34f, .45f, 0.9f),
+                        hoveredBackground = base.inverse.copy(alpha = 0.1f),
+                        disabledBackground = Color.hsl(86f, .13f, .9f),
                         outline = null,
                     ),
                     link = ButtonColor(
@@ -149,6 +150,7 @@ data class BaseCampgroundTheme(
                     default = Color.hsl(0f, 0f, .87f),
                     secondary = Color.hsl(0f, 0f, .7f)
                 ),
+                border = Color.hsl(0f, 0f, 0.96f),
                 button = ButtonColors(
                     default = ButtonColor(
                         background = inverse,
@@ -162,7 +164,7 @@ data class BaseCampgroundTheme(
                     secondary = ButtonColor(
                         background = secondary,
                         foreground = inverse,
-                        hoveredBackground = Color.hsl(0f, 0f, .12f),
+                        hoveredBackground = inverse.copy(alpha = 0.2f),
                         outline = null,
                     ),
                     danger = base.button.danger.copy(
@@ -170,7 +172,8 @@ data class BaseCampgroundTheme(
                     ),
                     ghost = base.button.ghost.copy(
                         foreground = inverse,
-                        hoveredBackground = secondary
+                        hoveredBackground = base.inverse.copy(alpha = 0.6f),
+                        disabledBackground = secondary,
                     ),
                     link = ButtonColor(
                         background = Color.Transparent,
