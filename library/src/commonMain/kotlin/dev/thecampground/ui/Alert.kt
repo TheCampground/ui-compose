@@ -5,8 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,18 +21,19 @@ import dev.thecampground.ui.annotation.CampgroundProp
 private const val ALERT_ICON_SIZE = 20
 
 @Composable
-@CampgroundComponent(description = "Displays a callout for user attention.")
+@CampgroundComponent(name = "Alert", description = "Displays a callout for user attention.")
 @Suppress("unused")
 fun BaseAlert(
     @CampgroundProp(description = "The variant of the alert")
     color: AlertColor,
+    hasTitle: Boolean = true,
     icon: IconComposable,
     content: TextComposable
 ) {
     Row(
         modifier =
             Modifier
-                .width(700.dp)
+                .fillMaxWidth()
                 .clip(RoundedInputShape)
                 .border(
                     width = 1.dp,
@@ -41,7 +42,7 @@ fun BaseAlert(
                 )
                 .background(color.background)
                 .padding(12.dp),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = if (hasTitle) Alignment.Top else Alignment.CenterVertically
     ) {
 
         icon(color.foreground, ALERT_ICON_SIZE.dp)
@@ -53,10 +54,11 @@ fun BaseAlert(
 }
 
 @Composable
-@CampgroundComponent(description = "Displays a callout for user attention.")
+@CampgroundComponent(name = "Alert", description = "Displays a callout for user attention.")
 @Suppress("unused")
 fun Alert(
     variant: AlertVariants = AlertVariants.DEFAULT,
+    hasTitle: Boolean = true,
     icon: IconComposable,
     content: TextComposable
 ) {
@@ -72,12 +74,43 @@ fun Alert(
     BaseAlert(
         color = colors,
         icon = icon,
+        hasTitle = hasTitle,
     ) { tint ->
         content(tint)
     }
 }
 
-@CampgroundComponent(description = "Displays a callout for user attention.")
+@CampgroundComponent(name = "Alert", description = "Displays a callout for user attention.")
+@Composable
+@Suppress("unused")
+fun Alert(
+    variant: AlertVariants = AlertVariants.DEFAULT,
+    icon: IconComposable,
+    title: String? = null,
+    content: TextComposable
+) {
+
+    Alert(
+        variant = variant,
+        icon = icon,
+        hasTitle = title != null,
+    ) { tint ->
+        if (title != null) {
+            Text(
+                title,
+                color = tint,
+                fontSize = 18.sp,
+                lineHeight = 24.sp,
+                letterSpacing = (-0.5).sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        content(tint)
+    }
+}
+
+@CampgroundComponent(name = "Alert", description = "Displays a callout for user attention.")
 @Composable
 @Suppress("unused")
 fun Alert(
@@ -90,10 +123,14 @@ fun Alert(
     Alert(
         variant = variant,
         icon = icon,
+        title = title,
     ) { tint ->
-        if (title != null) {
-            Text(title, color = tint, fontSize = 18.sp, lineHeight = 24.sp, letterSpacing = (-0.5).sp, fontWeight = FontWeight.W600)
-        }
-        Text(content, color = tint, fontSize = 16.sp, letterSpacing = (-0.5).sp, fontWeight = FontWeight.W400)
+        Text(
+            content,
+            color = tint,
+            fontSize = 16.sp,
+            letterSpacing = (-0.5).sp,
+            fontWeight = FontWeight.Normal
+        )
     }
 }
