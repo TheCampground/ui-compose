@@ -24,12 +24,17 @@ import com.squareup.kotlinpoet.joinToCode
 import dev.thecampground.ui.annotation.model.CampgroundComponent
 import dev.thecampground.ui.annotation.model.CampgroundProp
 
+
+data class RootComponent(
+    val name: String,
+    val component: CampgroundComponent
+)
 class FunctionProcessor(
     val codeGenerator: CodeGenerator,
     @Suppress("unused")
     val logger: KSPLogger
 ) : SymbolProcessor {
-    private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, CampgroundComponent>>()
+    private val collectedComponents = mutableListOf<Pair<KSFunctionDeclaration, RootComponent>>()
     private var fileAlreadyGenerated = false
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -56,9 +61,13 @@ class FunctionProcessor(
         if (collectedComponents.isEmpty()) return
 
 
-        val grouped = collectedComponents.groupBy { (fn, _) ->
-            fn.simpleName.asString()
-        }
+        val grouped: Map<String, List<CampgroundComponent>> =
+            collectedComponents
+                .groupBy { (_, root) -> root.name }
+                .mapValues { (_, entries) ->
+                    entries.map { (_, root) -> root.component }
+                }
+
 
         val file = codeGenerator.createNewFile(
             Dependencies(false, *collectedComponents.map { it.first.containingFile!! }.toTypedArray()),
@@ -67,17 +76,18 @@ class FunctionProcessor(
             "kt"
         )
 
-        val mapEntries = grouped.map { (name, comps) ->
-            val componentExprs = comps.map { (_, comp) -> buildComponentExpr(comp) }
+        val mapEntries = grouped.map { (name, components) ->
 
-            val listBlock = componentExprs
-                .map { CodeBlock.of("%L", it) }
-                .joinToCode(separator = ",\n")
+            val componentExprs = components.map { buildComponentExpr(it) }
 
             CodeBlock.builder()
                 .add("\n%S to listOf(\n", name)
                 .indent()
-                .add(listBlock)
+                .add(
+                    componentExprs
+                        .map { CodeBlock.of("%L", it) }
+                        .joinToCode(separator = ",\n")
+                )
                 .unindent()
                 .add("\n)")
                 .build()
@@ -157,10 +167,17 @@ class FunctionProcessor(
         }
     }
 
-    private fun generateFunctionDef(func: KSFunctionDeclaration): CampgroundComponent {
+    private fun generateFunctionDef(func: KSFunctionDeclaration): RootComponent {
+        val annotation =
+            func.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundComponent")
         val funcName = func.simpleName.asString()
+        val annotatedName = annotation?.getArgumentValueAsString("name")
+        val name = when {
+            (annotatedName == null) || annotatedName == "NoName" -> funcName
+            else -> annotatedName
+        }
+
         val paramList = mutableListOf<CampgroundProp>()
-        val annotation = func.getAnnotationOrNull("dev.thecampground.ui.annotation.CampgroundComponent")
         val description = annotation?.getArgumentValueAsString("description") ?: "No description provided."
 
 
@@ -168,10 +185,13 @@ class FunctionProcessor(
             paramList.add(generateParamDef(param))
         }
 
-        return CampgroundComponent(
-            name = funcName,
-            description = description,
-            props = paramList
+        return RootComponent(
+            name = name,
+            component = CampgroundComponent(
+                name = funcName,
+                description = description,
+                props = paramList
+            )
         )
     }
 
