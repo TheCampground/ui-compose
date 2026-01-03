@@ -1,6 +1,5 @@
 package dev.thecampground.ui.showcase.presentation.documentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -80,7 +79,7 @@ class DocumentationScreen : Screen {
                         Row(
                             modifier = Modifier.fillMaxWidth().blur(0.dp)
                         ) {
-                            AnimatedVisibility(
+                            androidx.compose.animation.AnimatedVisibility(
                                 boxWidth >= 800.dp,
                                 enter = fadeIn() + slideInHorizontally() + expandHorizontally(),
                                 exit = fadeOut() + slideOutHorizontally() + shrinkHorizontally()
@@ -104,59 +103,57 @@ class DocumentationScreen : Screen {
 
                         // Floating navigation overlay for small screens
                         if (boxWidth < 800.dp) {
-                            @Suppress
-                            (
-                                AnimatedVisibility(
-                                    navigationMenuOpen.value,
-                                    enter = fadeIn() + slideInHorizontally(),
-                                    exit = fadeOut() + slideOutHorizontally()
+                            androidx.compose.animation.AnimatedVisibility(
+                                navigationMenuOpen.value,
+                                enter = fadeIn() + slideInHorizontally(),
+                                exit = fadeOut() + slideOutHorizontally()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        // This transparent clickable box captures outside clicks
+                                        .clickable(
+                                            // Indication = null prevents ripple effect
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            navigationMenuOpen.value = false
+
+                                        }
                                 ) {
+                                    // Your actual navigation menu
                                     Box(
                                         modifier = Modifier
-                                            .fillMaxSize()
-                                            // This transparent clickable box captures outside clicks
+                                            .align(Alignment.TopStart) // example: right side drawer
+                                            .width(300.dp)
+                                            .fillMaxHeight()
+                                            .background(theme.alternative)
+                                            // Prevent clicks inside the menu from closing it
                                             .clickable(
-                                                // Indication = null prevents ripple effect
                                                 indication = null,
                                                 interactionSource = remember { MutableInteractionSource() }
-                                            ) {
-                                                navigationMenuOpen.value = false
-
-                                            }
+                                            ) { /* consume click only */ }
                                     ) {
-                                        // Your actual navigation menu
                                         Box(
                                             modifier = Modifier
-                                                .align(Alignment.TopStart) // example: right side drawer
-                                                .width(300.dp)
-                                                .fillMaxHeight()
-                                                .background(theme.alternative)
-                                                // Prevent clicks inside the menu from closing it
-                                                .clickable(
-                                                    indication = null,
-                                                    interactionSource = remember { MutableInteractionSource() }
-                                                ) { /* consume click only */ }
+                                                .fillMaxSize()
+                                                .background(Colors.BG_DARK.copy(alpha = 0.0f))
                                         ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .background(Colors.BG_DARK.copy(alpha = 0.0f))
-                                            ) {
 
-                                                NavigationMenu(
-                                                    navigator,
-                                                    theme,
-                                                    onClick = {
-                                                        navigationMenuOpen.value = false
-                                                    },
-                                                    modifier = Modifier
-                                                        .align(Alignment.Center)
-                                                        .background(theme.alternative)
-                                                )
-                                            }
+                                            NavigationMenu(
+                                                navigator,
+                                                theme,
+                                                onClick = {
+                                                    navigationMenuOpen.value = false
+                                                },
+                                                modifier = Modifier
+                                                    .align(Alignment.Center)
+                                                    .background(theme.alternative)
+                                            )
                                         }
                                     }
-                                })
+                                }
+                            }
                         }
                     }
                 }
