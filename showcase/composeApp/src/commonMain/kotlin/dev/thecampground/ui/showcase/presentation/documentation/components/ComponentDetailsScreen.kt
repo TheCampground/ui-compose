@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -107,25 +108,29 @@ private fun PropName(prop: CampgroundProp) {
 fun PropsTableRow(prop: CampgroundProp) {
     val theme = LocalCampgroundTheme.current
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            PropName(prop)
-        }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = theme.border)
 
-        Text(
-            prop.type,
-            modifier = Modifier.weight(1f),
-            color = theme.text.default
-        )
-        Text(
-            prop.description,
-            modifier = Modifier.weight(2f),
-            color = theme.text.default
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                PropName(prop)
+            }
+
+            Text(
+                prop.type,
+                modifier = Modifier.weight(1f),
+                color = theme.text.default
+            )
+            Text(
+                prop.description,
+                modifier = Modifier.weight(2f),
+                color = theme.text.default
+            )
+        }
     }
 }
 
@@ -143,15 +148,19 @@ fun PropsColumn(prop: CampgroundProp) {
 @Composable
 fun RenderComponent(
     maxWidth: Dp,
-    component: dev.thecampground.ui.annotation.model.CampgroundComponent
+    name: String,
+    components: List<dev.thecampground.ui.annotation.model.CampgroundComponent>,
 ) {
-    val composable = ComponentPreview.components[component.name]
+    val composable = ComponentPreview.components[name]
     val theme = LocalCampgroundTheme.current
     if (composable != null) {
         Column(
             modifier = Modifier.fillMaxWidth(if (maxWidth < 800.dp) 1f else .8f).padding(14.dp)
         ) {
-            composable(maxWidth)  // invoke the @Composable lambda
+            Column(verticalArrangement = Arrangement.spacedBy(32.dp)) {
+                composable(maxWidth)  // invoke the @Composable lambda
+            }
+
 
             Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                 Text(
@@ -160,55 +169,63 @@ fun RenderComponent(
                     fontSize = 26.sp,
                     fontWeight = FontWeight.SemiBold
                 )
+                for (component in components) {
+                    Column {
+                        Text(
+                            component.name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                            color = theme.button.primary.foreground,
+                            modifier = Modifier
+                                .clip(RoundedInputShape)
+                                .border(
+                                    width = 1.dp,
+                                    color = theme.brand.copy(alpha = 0.8f)
+                                )
+                                .background(theme.brand)
+                                .padding(8.dp)
+                        )
+                    }
 
-                Column {
-                    Text(
-                        component.name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
-                        color = theme.button.primary.foreground,
-                        modifier = Modifier
-                            .clip(RoundedInputShape)
-                            .border(
-                                width = 1.dp,
-                                color = theme.brand.copy(alpha = 0.8f)
-                            )
-                            .background(theme.brand)
-                            .padding(8.dp)
-                    )
-                }
+                    BoxWithConstraints {
 
-                BoxWithConstraints {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            if (this@BoxWithConstraints.maxWidth > 600.dp) {
+                                PropsTableHeader()
 
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        if (this@BoxWithConstraints.maxWidth > 600.dp) {
-                            PropsTableHeader()
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    for (prop in component.props) {
+                                        PropsTableRow(prop)
+                                    }
+                                }
+                            } else {
+                                Text(
+                                    "Property",
+                                    color = theme.text.default,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
 
-                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                for (prop in component.props) {
-                                    PropsTableRow(prop)
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    for (prop in component.props) {
+                                        PropsColumn(prop)
+                                    }
                                 }
                             }
-                        } else {
-                            Text(
-                                "Property",
-                                color = theme.text.default,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
 
-                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                for (prop in component.props) {
-                                    PropsColumn(prop)
-                                }
-                            }
+                            HorizontalDivider(
+                                modifier = Modifier.fillMaxWidth().padding(top = 18.dp),
+                                color = theme.border,
+                                thickness = 2.dp
+                            )
                         }
-
                     }
                 }
+
+
 
 //                Column(modifier = Modifier.fillMaxWidth()) {
 //                    Row(
@@ -259,15 +276,15 @@ data class ComponentDetailsScreen(val component: String) : Screen {
 
     @Composable
     override fun Content() {
-        val campgroundComponent = CampgroundComponents.components[component]?.first()
+        val allComponents = CampgroundComponents.components[component]
         val scrollState = rememberScrollState()
         LocalCampgroundTheme.current
 
         BoxWithConstraints(modifier = Modifier.verticalScroll(scrollState)) {
-            if (campgroundComponent == null) {
+            if (allComponents == null) {
                 Text("A component was mentioned but it's documentation could not be found.")
             } else {
-                RenderComponent(this@BoxWithConstraints.maxWidth, campgroundComponent)
+                RenderComponent(this@BoxWithConstraints.maxWidth, component, allComponents)
 //                DocumentationRoot(
 //                    name = campgroundComponent.name,
 //                    description = campgroundComponent.description,
