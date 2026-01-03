@@ -17,9 +17,9 @@ enum class ButtonVariants {
     DEFAULT,
     PRIMARY,
     SECONDARY,
+    DANGER,
     OUTLINE,
     GHOST,
-    DANGER,
     LINK
 }
 
