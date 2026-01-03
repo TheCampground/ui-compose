@@ -11,7 +11,7 @@ import dev.thecampground.ui.showcase.presentation.documentation.DocumentationRoo
 
 private val accordionExample = CampgroundCodeExample(
     code = """
-         AccordionRoot(type = AccordionTypes.SINGLE) {
+         AccordionRoot(AccordionTypes.SINGLE) {
                AccordionItem(
                   title = "What is Campground?",
                   content = "Campground is an independent collective where creativity meets code and design."
@@ -51,8 +51,10 @@ fun AccordionDocumentation(maxWidth: Dp) {
 //
 //        }
 
-        ComponentCodePreview(maxWidth, accordionExample.code) {
+        ComponentCodePreview(accordionExample.code) {
             accordionExample.component()
         }
+
+
     }
 }
