@@ -43,7 +43,9 @@ data class BaseCampgroundTheme(
     val brand: Color = Color.hsl(31f, .96f, .78f),
 
     val button: ButtonColors = ButtonColors(),
-    val alert: AlertColors = AlertColors()
+    val alert: AlertColors = AlertColors(),
+
+    val isDark: Boolean = false
 ) {
 
     companion object {
@@ -71,9 +73,9 @@ data class BaseCampgroundTheme(
                         outline = null,
                     ),
                     danger = ButtonColor(
-                        background = Color.hsl(347f, .6f, .5f),
-                        foreground = base.inverse,
-                        hoveredBackground = Color.hsl(34f, .45f, 0.9f),
+                        background = Color.hsl(347f, .6f, .50f),
+                        foreground = Color.White,
+                        hoveredBackground = Color.hsl(347f, .5f, .4f),
                         outline = null,
                     ),
                     ghost = ButtonColor(
@@ -140,22 +142,25 @@ data class BaseCampgroundTheme(
             val base = createLight()
             val inverse = Color.hsl(0f, 0f, .96f)
             val secondary = Color.hsl(0f, 0f, .1f)
+            val secondaryText = Color.hsl(0f, 0f, .7f)
+            val borderColor = Color.hsl(0f, 0f, 0.30f)
+            val alternativeColor = Color.hsl(0f, 0f, .05f)
 
             return BaseCampgroundTheme(
                 background = base.inverse,
                 secondary = Color.hsl(0f, 0f, .1f),
-                alternative = Color.hsl(0f, 0f, .05f),
+                alternative = alternativeColor,
                 inverse = inverse,
                 brand = Color.hsl(31f, .96f, .78f),
                 text = TextColors(
                     default = Color.hsl(0f, 0f, .87f),
-                    secondary = Color.hsl(0f, 0f, .7f)
+                    secondary = secondaryText,
                 ),
-                border = Color.hsl(0f, 0f, 0.96f),
+                border = borderColor,
                 button = ButtonColors(
                     default = ButtonColor(
                         background = inverse,
-                        foreground = base.background,
+                        foreground = base.inverse,
                         hoveredBackground = Color.hsl(.0f, .0f, .85f),
                         outline = null,
                     ),
@@ -165,15 +170,18 @@ data class BaseCampgroundTheme(
                     secondary = ButtonColor(
                         background = secondary,
                         foreground = inverse,
-                        hoveredBackground = inverse.copy(alpha = 0.2f),
+                        hoveredBackground = Color.hsl(0f, 0f, .2f),
                         outline = null,
                     ),
-                    danger = base.button.danger.copy(
-                        hoveredBackground = Color.hsl(347f, .6f, .45f)
+                    outline = ButtonColor(
+                        background = alternativeColor,
+                        hoveredBackground = Color.hsl(0f, 0f, .1f),
+                        outline = borderColor.copy(alpha = 0.6f),
                     ),
+                    danger = base.button.danger,
                     ghost = base.button.ghost.copy(
                         foreground = inverse,
-                        hoveredBackground = base.inverse.copy(alpha = 0.6f),
+                        hoveredBackground = Color.hsl(0f, 0f, .1f),
                         disabledBackground = secondary,
                     ),
                     link = ButtonColor(
@@ -183,7 +191,51 @@ data class BaseCampgroundTheme(
                         outline = null,
                     ),
                 ),
-                alert = base.alert,
+                alert = AlertColors(
+                    default = AlertColor(
+                        background = base.brand.copy(alpha = 0.1f),
+                        foreground = base.brand,
+                        outline = base.brand.copy(alpha = 0.4f)
+                    ),
+                    success = run {
+                        val success = Color.hsl(149f, .91f, .67f)
+
+                        AlertColor(
+                            background = success.copy(alpha = 0.1f),
+                            foreground = success,
+                            outline = success.copy(alpha = 0.6f)
+                        )
+                    },
+                    info = run {
+                        val info = Color.hsl(205f, .69f, .62f)
+
+                        AlertColor(
+                            background = info.copy(alpha = 0.1f),
+                            foreground = info,
+                            outline = info.copy(alpha = 0.6f)
+                        )
+                    },
+                    secondary = run {
+                        val secondary = Color.hsl(0f, .0f, .2f)
+
+                        AlertColor(
+                            background = secondary.copy(alpha = 0.1f),
+                            foreground = secondaryText,
+                            outline = secondary
+                        )
+                    },
+                    danger = run {
+                        val danger = Color.hsl(347f, .6f, .5f)
+
+                        AlertColor(
+                            background = danger.copy(alpha = 0.1f),
+                            foreground = danger,
+                            outline = danger.copy(alpha = 0.3f)
+                        )
+                    },
+                ),
+
+                isDark = true,
             )
         }
     }
