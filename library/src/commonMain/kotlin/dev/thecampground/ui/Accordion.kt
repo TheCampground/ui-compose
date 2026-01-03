@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import camgroundui.library.generated.resources.Res
 import camgroundui.library.generated.resources.caret_up
 import dev.thecampground.ui.annotation.CampgroundComponent
+import dev.thecampground.ui.annotation.CampgroundProp
 import dev.thecampground.ui.annotation.CampgroundType
 import org.jetbrains.compose.resources.painterResource
 import kotlin.random.Random
@@ -82,8 +83,12 @@ val LocalAccordionController = staticCompositionLocalOf<AccordionController> {
 }
 
 @Composable
-@CampgroundComponent(description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(
+    name = "Accordion",
+    description = "A custom button components with multiple variations and sizes"
+)
 fun AccordionRoot(
+    @CampgroundProp("Determines how many accordion items can be open at the same time.")
     type: AccordionTypes = AccordionTypes.SINGLE,
     content: @Composable () -> Unit
 ) {
@@ -99,7 +104,7 @@ fun AccordionRoot(
 }
 
 @Composable
-@CampgroundComponent(description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(name = "Accordion", description = "The accordion item")
 fun BaseAccordionItem(
     id: String = remember { Random.nextBytes(24).toString() },
     enabled: Boolean = true,
@@ -173,6 +178,7 @@ fun BaseAccordionItem(
 }
 
 @Composable
+@CampgroundComponent(name = "Accordion")
 fun AccordionItem(
     id: String = remember { Random.nextBytes(24).toString() },
     action: AccordionActionScope = { id, controller ->
