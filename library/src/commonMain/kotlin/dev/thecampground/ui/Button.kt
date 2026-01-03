@@ -3,6 +3,7 @@ package dev.thecampground.ui
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -35,7 +36,10 @@ private const val BUTTON_ICON_SIZE = 18
 
 
 @Composable
-@CampgroundComponent(description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(
+    name = "Button",
+    description = "A custom button components with multiple variations and sizes"
+)
 fun BaseButton(
     @CampgroundProp(description = "Sets if the button should be clickable or not.")
     enabled: Boolean = true,
@@ -93,7 +97,15 @@ fun BaseButton(
     }
 
         Box(
-            modifier = modifier.scale(buttonScaleAnimated).clip(RoundedInputShape).background(containerColor)
+            modifier = modifier
+                .scale(buttonScaleAnimated)
+                .clip(RoundedInputShape)
+                .border(
+                    shape = RoundedInputShape,
+                    color = color.outline ?: Color.Transparent,
+                    width = 1.dp
+                )
+                .background(containerColor)
                 .clickable(
                     enabled = enabled,
                     interactionSource = interactionSource,
@@ -115,7 +127,10 @@ fun BaseButton(
 }
 
 @Composable
-@CampgroundComponent(description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(
+    name = "Button",
+    description = "A custom button components with multiple variations and sizes"
+)
 fun Button(
     @CampgroundProp(description = "Sets if the button should be clickable or not.")
     enabled: Boolean = true,
@@ -138,7 +153,9 @@ fun Button(
         ButtonVariants.PRIMARY -> theme.primary
         ButtonVariants.SECONDARY -> theme.secondary
         ButtonVariants.GHOST -> theme.ghost
-        else -> theme.ghost
+        ButtonVariants.DANGER -> theme.danger
+        ButtonVariants.OUTLINE -> theme.outline
+        ButtonVariants.LINK -> theme.link
     }
 
     BaseButton(
@@ -153,7 +170,10 @@ fun Button(
 }
 
 @Composable
-@CampgroundComponent(description = "A custom button components with multiple variations and sizes")
+@CampgroundComponent(
+    name = "Button",
+    description = "A custom button components with multiple variations and sizes"
+)
 fun Button(
     enabled: Boolean = true,
     onClick: () -> Unit,
